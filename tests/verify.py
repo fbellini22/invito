@@ -1,4 +1,4 @@
-"""Local regression checks; Formspree is intercepted, no email is sent."""
+"""Local regression checks; FormSubmit is intercepted, no email is sent."""
 from pathlib import Path
 import os
 import sys
@@ -60,8 +60,11 @@ try:
                 page = context.new_page()
                 errors = []
                 page.on('pageerror', lambda error: errors.append(str(error)))
+                page.route('https://formsubmit.co/**', lambda route: route.fulfill(status=200, json={'success':'false','message':'Please activate your form'}))
                 page.goto(URL)
                 visible(page, 'access')
+                assert 'Formspree' not in page.locator('body').inner_text()
+                assert 'FormSubmit' not in page.locator('body').inner_text()
                 assert page.locator('progress, .terminal, .steps, .radar, #mission-id').count() == 0
                 mission = page.evaluate('sessionStorage.getItem("dinner-mission")')
                 shot(page, f'{engine}-{name}-access')
@@ -110,18 +113,18 @@ try:
                 page.locator('#notes').focus()
                 page.locator('#submit').tap()
                 expect(page.locator('#send-error')).to_be_visible()
-                expect(page.locator('#send-detail')).to_contain_text('attivare')
+                expect(page.locator('#send-detail')).to_contain_text('Non è stato possibile confermare')
                 expect(page.locator('#notes')).to_have_value('Un tavolo tranquillo, grazie.')
                 expect(page.locator('#submit')).to_be_enabled()
                 assert not errors, errors
-                results.append(f'{engine} {width}x{height}: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS')
+                results.append(f'{engine} {width}x{height}: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, activation pending preserves data PASS')
                 context.close()
 
             context = browser.new_context(viewport={'width':393,'height':852},has_touch=True,is_mobile=True,reduced_motion='reduce')
             page = context.new_page()
             errors = []
             page.on('pageerror', lambda error: errors.append(str(error)))
-            source = (ROOT/'app.js').read_text(encoding='utf-8-sig').replace('INSERIRE_ENDPOINT_QUI','https://formspree.io/f/testonly')
+            source = (ROOT/'app.js').read_text(encoding='utf-8-sig')
             page.route('**/app.js', lambda route: route.fulfill(body=source,content_type='text/javascript'))
             requests = []
             mode = {'value':'error'}
@@ -131,18 +134,25 @@ try:
                 if mode['value']=='error': route.fulfill(status=503,json={'error':'unavailable'})
                 elif mode['value']=='network': route.abort('failed')
                 elif mode['value']=='malformed': route.fulfill(status=200,json={'unexpected':True})
+                elif mode['value']=='invalid-json': route.fulfill(status=200,body='not JSON',content_type='application/json')
+                elif mode['value']=='null': route.fulfill(status=200,body='null',content_type='application/json')
+                elif mode['value']=='activation': route.fulfill(status=200,json={'success':'false','message':'Please activate your form'})
+                elif mode['value']=='false': route.fulfill(status=200,json={'success':False})
+                elif mode['value']=='truthy': route.fulfill(status=200,json={'success':1})
                 else: pending.append(route)
-            page.route('https://formspree.io/**',respond)
+            page.route('https://formsubmit.co/**',respond)
             page.goto(URL)
             form(page)
             fill(page)
-            for failure in ['error','network','malformed']:
+            for failure in ['error','network','malformed','invalid-json','null','activation','false','truthy']:
                 mode['value'] = failure
                 page.locator('#submit').tap()
                 expect(page.locator('#send-error')).to_be_visible()
                 expect(page.locator('#submit')).to_be_enabled()
                 visible(page,'configuration')
                 expect(page.locator('#time')).to_have_value('20:30')
+                expect(page.locator('#submit')).to_have_text('RIPROVA')
+                assert page.evaluate('sessionStorage.getItem("dinner-sent")') is None
             mode['value']='success'
             before = len(requests)
             page.locator('#mission-form').evaluate('(f) => {for(let i=0;i<4;i++) f.dispatchEvent(new Event("submit",{bubbles:true,cancelable:true}))}')
@@ -152,7 +162,7 @@ try:
             expect(page.locator('#submit')).to_be_disabled()
             expect(page.locator('#submit')).to_have_text('Un secondo...')
             expect(page.locator('#success')).to_be_hidden()
-            pending.pop().fulfill(status=200,json={'ok':True})
+            pending.pop().fulfill(status=200,json={'success':'true' if engine == 'webkit' else True})
             # No artificial sequence or timer after a confirmed response.
             expect(page.locator('#success')).to_be_visible(timeout=1000)
             assert set(requests[-1])=={'Mission ID','Data proposta','Ora proposta','Preferenza culinaria','Note'}
@@ -167,7 +177,7 @@ try:
             visible(page,'success')
             assert len(requests)==before+1
             assert not errors, errors
-            results.append(f'{engine}: server/network/malformed failures, retry, pending lock, exact payload, immediate confirmed success, refresh protection PASS')
+            results.append(f'{engine}: HTTP/network/invalid JSON/activation/false/truthy failures, retry, pending lock, exact payload, immediate confirmed success, refresh protection PASS')
             context.close()
 
             context = browser.new_context(viewport={'width':375,'height':667},is_mobile=True,has_touch=True)

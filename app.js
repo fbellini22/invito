@@ -1,7 +1,7 @@
 "use strict";
 
 // Inserisci esclusivamente l'URL pubblico del form. Nessuna chiave privata.
-const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
+const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
 
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -144,20 +144,20 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
     const controller = new AbortController();
     let timeout;
     try {
-      if (!/^https:\/\/formspree\.io\/f\/[a-zA-Z0-9]+$/.test(FORM_ENDPOINT)) throw new Error("configuration");
       timeout = setTimeout(() => controller.abort(), 20000);
       const response = await fetch(FORM_ENDPOINT, {
         method: "POST", headers: { "Content-Type": "application/json", "Accept": "application/json" },
-        body: JSON.stringify(payload), signal: controller.signal, credentials: "omit", referrerPolicy: "no-referrer"
+        body: JSON.stringify(payload), signal: controller.signal, credentials: "omit", referrerPolicy: "strict-origin-when-cross-origin"
       });
       if (!response.ok) throw new Error("service");
       const confirmation = await response.json();
-      if (confirmation.ok !== true) throw new Error("service");
+      // FormSubmit may return success as a string; "false" is not a confirmation.
+      if (!confirmation || (confirmation.success !== true && confirmation.success !== "true")) throw new Error("service");
       state.sent = true;
       storage.set("dinner-sent", missionId);
-    } catch (error) {
+    } catch {
       $("send-error").hidden = false;
-      $("send-detail").textContent = error.message === "configuration" ? "Filippo deve ancora attivare la ricezione delle proposte. Le tue scelte sono ancora qui." : "Le tue scelte sono ancora qui. Controlla la connessione e riprova.";
+      $("send-detail").textContent = "Le tue scelte sono ancora qui. Non è stato possibile confermare la ricezione. Riprova tra poco.";
       $("submit").textContent = "RIPROVA";
       $("submit").disabled = false;
       controls.forEach((control) => { control.disabled = false; });
