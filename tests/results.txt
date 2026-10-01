@@ -1,0 +1,16 @@
+webkit 320x568: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+webkit 375x667: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+webkit 393x852: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+webkit 430x932: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+webkit 1440x900: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+webkit: HTTP failure, network failure, malformed confirmation, retry, exact payload, repeated submit, success, refresh protection PASS
+webkit: normal motion, real cancellation, no outbound submission PASS
+webkit: comic analysis results, acceptance pause, repeated acceptance, delayed callbacks PASS
+chromium 320x568: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+chromium 375x667: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+chromium 393x852: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+chromium 430x932: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+chromium 1440x900: access, session ID, analysis, 4 refusals, acceptance, validation, radio, scroll, unconfigured endpoint PASS
+chromium: HTTP failure, network failure, malformed confirmation, retry, exact payload, repeated submit, success, refresh protection PASS
+chromium: normal motion, real cancellation, no outbound submission PASS
+chromium: comic analysis results, acceptance pause, repeated acceptance, delayed callbacks PASS

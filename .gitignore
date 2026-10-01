@@ -1,0 +1,3 @@
+.test-tools/
+.test-browsers/
+__pycache__/
