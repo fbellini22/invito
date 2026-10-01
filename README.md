@@ -1,11 +1,11 @@
-# DINNER PROTOCOL v1.0
+# A cena, insieme
 
-Web app ironica, mobile-first, senza framework né dipendenze da caricare nel browser. Tutto rimane locale fino alla configurazione e pubblicazione da parte tua. Nessun commit, push o pubblicazione è stato effettuato.
+Un invito digitale a cena, curato e informale. DINNER PROTOCOL rimane il nome interno del progetto. HTML, CSS e JavaScript vanilla, senza framework né dipendenze da caricare nel browser. Nessun commit, push o pubblicazione è stato effettuato durante il redesign.
 
 ## File
 
 - `index.html`: schermate e controlli semantici, metadati e percorsi relativi.
-- `style.css`: interfaccia SaaS sperimentale, palette lavanda/albicocca, responsive, safe area e movimento ridotto.
+- `style.css`: invito su carta panna, titoli serif, bordeaux e oliva, illustrazioni CSS, responsive e safe area.
 - `app.js`: stato, sequenze, Mission ID, gag, validazione e invio Formspree.
 - `.gitignore`: esclude gli strumenti di test locali.
 - `tests/verify.py`: test ripetibili con server locale e invii simulati.
@@ -16,24 +16,24 @@ Per pubblicare servono solo **index.html, style.css e app.js**. `.test-tools/` e
 
 ## Struttura
 
-Inizio → analisi → proposta → accettazione → calendari → elaborazione invio → successo. Viene mostrata una schermata alla volta. Il pulsante NO si muove dentro un'area separata da CI STO; al quarto tap appare «Ok, no davvero», che registra il rifiuto senza inviare dati.
+Invito → ingredienti della serata → proposta → brindisi → giorno, ora e cibo → successo. Viene mostrata una schermata alla volta. Le quattro card della serata appaiono progressivamente, poi «CONTINUIAMO» permette di proseguire senza fretta. Il pulsante NO si sposta leggermente in un'area separata da SÌ, CI STO; al quarto tap appare «No davvero», che chiude l'invito senza inviare dati.
 
 Il Mission ID rimane in `sessionStorage` per la sessione della scheda. Dopo una ricezione confermata viene salvato solo un indicatore di invio, per impedire nuove trasmissioni dopo un ricaricamento. Nessuna data, ora, nota o preferenza è memorizzata nel browser in modo persistente. Se lo storage è disabilitato, l'app funziona in memoria, ma il ricaricamento avvia una nuova sessione.
 
-Le schermate tecniche e le percentuali sono parte della gag: un software inutilmente sofisticato per organizzare una cena. Non rappresentano analisi reali. L'invio effettivo usa HTTPS verso Formspree. La sequenza comica dell'email parte solo dopo la conferma del servizio; «Tentativo di sembrare un’app professionale: FALLITO» è una battuta, non un errore di invio.
+Il Mission ID è mantenuto soltanto internamente e nel payload email. Non appare nell'invito. L'invio effettivo usa HTTPS verso Formspree. Durante la richiesta il pulsante mostra «Un secondo...». Il successo appare subito dopo la conferma del servizio, senza sequenze finte o attese aggiuntive.
 
-## Redesign: tecnologia sproporzionata
+## Redesign: un invito, una serata
 
-- Rimosso il tono da operazione segreta da titoli, metadati, messaggi, pulsanti e footer. Conservato il Mission ID.
-- Sostituito il radar con la scheda Dinner Engine: grafico decorativo di complessità e una sola cena da organizzare. Palette lavanda e albicocca, card morbide e tipografia più vicina a un'app SaaS.
-- Analisi in otto passaggi: probabilità «per me è uguale» all'87%, secondo stomaco disponibile, discussione sul ristorante stimata in 47 minuti. Risultato 98.7% e margine di errore volutamente discutibile.
-- Proposta con tre obiettivi e nuovo copy su durata, calorie e dress code. Quattro risposte al NO, con ricalcolo ritardato e rifiuto reale sempre disponibile dopo la gag.
-- Accettazione in due tempi: pausa per mantenere un comportamento professionale, poi «RISPOSTA CORRETTA» e sincronizzazione calendari.
-- Form «IL PROBLEMA DEI CALENDARI», micro-reazione per ciascuna delle sei preferenze, nuove note e pulsante «INVIA PROPOSTA».
-- Sei passaggi comici dopo la ricezione confermata. Riepilogo finale di data, ora e preferenza, con icona coerente e battuta che appare dopo 1,6 secondi. Dopo un refresh resta la conferma ma il riepilogo non viene conservato, per non memorizzare le scelte.
-- Identificatori delle schermate e dei campi conservati. Endpoint, richiesta HTTP, payload email, validazioni, timeout, protezioni contro invii ripetuti e gestione di sessione rimangono quelli esistenti; aggiornati soltanto i messaggi rivolti alla persona.
+- Rimossi dashboard, barre, log, percentuali, indicatori di stato e tutto il copy informatico. Eliminati anche il codice delle sequenze e gli stili ormai inutili.
+- Nuova impaginazione da invito/menu: carta panna, bordeaux, terracotta, oliva; Georgia per i titoli e font di sistema per i testi. Nessun font esterno.
+- Tavolo apparecchiato per due e bicchieri da brindisi disegnati in CSS, senza immagini da scaricare. Animazioni brevi e rispetto del movimento ridotto.
+- Apertura «Ti va di andare a cena insieme?», quattro card su cibo, bere, chiacchiere e dolce; proposta semplice «Cena?».
+- Gag del NO con spostamenti contenuti, quattro messaggi naturali e rifiuto reale. Accettazione immediata con brindisi, senza pause obbligatorie.
+- Form «Quando sei libera?», date e time picker nativi, sei card da menu. «Italiano» sostituisce «Qualcosa di serio» anche nel valore inviato via email.
+- Riepilogo con giorno della settimana, data, ora e cibo. Successo immediato dopo la conferma, senza caricamenti artificiali. Dopo un refresh rimane la conferma ma il riepilogo non è conservato, per non memorizzare le scelte.
+- Endpoint, struttura del payload, richiesta HTTP, validazioni, timeout, blocchi dei doppi invii e sessione preservati. I nomi tecnici di alcuni identificatori rimangono interni e non sono visibili.
 
-I nuovi ritardi rispettano il movimento ridotto. Un messaggio ritardato del NO non può sovrascrivere la quarta risposta né interferire con l'accettazione.
+Con movimento ridotto le quattro card sono disponibili subito. L'interazione non richiede hover o animazioni.
 
 ## Prova locale
 
@@ -62,7 +62,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/IL_TUO_ID";
 
 Non inserire password, chiavi API o token privati. L'ID del form è pubblico per sua natura. Non è stato inserito alcun indirizzo email nel progetto.
 
-L'app invia un POST JSON con `Accept: application/json`. La sequenza finale parte esclusivamente dopo HTTP riuscito e conferma JSON `ok: true`. La notifica dipende dall'azione Email attiva sul servizio; l'accettazione del form non certifica che il messaggio sia già arrivato nella casella. [Documentazione AJAX](https://help.formspree.io/articles/building-your-form/submit-forms-with-javascript-ajax).
+L'app invia un POST JSON con `Accept: application/json`. La conferma finale appare esclusivamente dopo HTTP riuscito e JSON `ok: true`. La notifica dipende dall'azione Email attiva sul servizio; l'accettazione del form non certifica che il messaggio sia già arrivato nella casella. [Documentazione AJAX](https://help.formspree.io/articles/building-your-form/submit-forms-with-javascript-ajax).
 
 Il payload contiene soltanto:
 
@@ -83,7 +83,7 @@ Il layout e l'oggetto effettivo dell'email dipendono da Formspree. Il nome del f
 3. Verifica la risposta nel pannello Submissions di Formspree e l'email nella tua casella, inclusa la cartella spam.
 4. Controlla che siano presenti esattamente Mission ID, data, ora, preferenza e note. Prova anche senza note.
 5. Per ripetere il percorso dopo un invio riuscito, usa una nuova sessione privata oppure cancella i soli dati di sessione del sito. Il blocco dopo il successo è intenzionale.
-6. Per verificare un errore, disconnetti la rete dopo il caricamento: i dati rimangono nel form e appare **RIPROVA INVIO**. Ricollega la rete e riprova.
+6. Per verificare un errore, disconnetti la rete dopo il caricamento: i dati rimangono nel form e appare **RIPROVA**. Ricollega la rete e riprova.
 
 I test automatici non inviano email vere. Senza il tuo endpoint non è possibile verificare recapito, filtri antispam o quote del servizio.
 
@@ -109,7 +109,7 @@ python tests/verify.py
 
 Verifiche automatiche: WebKit e Chromium, 320×568, 375×667 (SE), 393×852, 430×932 e 1440×900. Percorsi relativi testati sotto una sottocartella. Controllati: schermata unica, Mission ID, tap ripetuti, quattro rifiuti, rifiuto reale senza POST, accettazione, errori di validazione, date passate, preferenza singola, scroll con viewport ridotta, endpoint assente, errore HTTP, errore di rete, conferma non valida, retry, payload, successo e blocco dopo refresh. Nessun errore JavaScript nei percorsi monitorati.
 
-Il redesign aggiunge verifiche su tutti i messaggi culinari, risultati dell'analisi, ricalcolo al terzo NO, pausa di accettazione, tap ripetuti su CI STO, riepilogo, battuta finale e sequenza email in sei passaggi. Anteprime aggiornate in `tests/screenshots/`.
+Il redesign aggiunge verifiche sull'assenza di componenti tecnici visibili, le quattro card della serata, tutti i messaggi culinari, i quattro NO, accettazione immediata, riepilogo, valore Italiano nel payload e successo entro un secondo dalla conferma simulata. Il test mantiene pendente una richiesta per controllare che non appaia un falso successo e che i doppi invii siano bloccati. Anteprime aggiornate in `tests/screenshots/`.
 
 Il test su WebKit Windows **non equivale a una certificazione su Safari iOS fisico**. I controlli nativi di data/ora, tastiera, notch/Dynamic Island e barre mobili Safari devono ancora essere verificati su un iPhone reale. La riduzione dell'altezza della viewport verifica lo scroll, non simula integralmente la tastiera iOS.
 

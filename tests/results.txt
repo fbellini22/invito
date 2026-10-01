@@ -1,0 +1,14 @@
+webkit 320x568: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+webkit 375x667: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+webkit 393x852: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+webkit 430x932: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+webkit 1440x900: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+webkit: server/network/malformed failures, retry, pending lock, exact payload, immediate confirmed success, refresh protection PASS
+webkit: ordinary animation, progressive cards, real refusal without submission PASS
+chromium 320x568: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+chromium 375x667: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+chromium 393x852: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+chromium 430x932: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+chromium 1440x900: responsive, hidden technical UI, session ID, cards, refusal bounds, acceptance, validation, six foods, input sizing, reduced viewport, unconfigured submission PASS
+chromium: server/network/malformed failures, retry, pending lock, exact payload, immediate confirmed success, refresh protection PASS
+chromium: ordinary animation, progressive cards, real refusal without submission PASS

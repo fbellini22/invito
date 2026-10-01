@@ -16,54 +16,14 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
     storage.set("dinner-mission", missionId);
   }
   const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0 };
-  $("mission-id").textContent = `MISSION ID: ${missionId}`;
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 80) : ms));
-  const steps = { access: 0, analysis: 1, briefing: 2, accepted: 2, configuration: 3, transmission: 3, success: 3, cancelled: 2 };
 
   function show(screen) {
     document.querySelectorAll(".screen").forEach((element) => { element.hidden = element.id !== screen; });
     state.screen = screen;
-    document.querySelectorAll(".steps > span").forEach((element, index) => {
-      element.classList.toggle("current", index === steps[screen]);
-      element.classList.toggle("done", index < steps[screen]);
-      if (index === steps[screen]) element.setAttribute("aria-current", "step");
-      else element.removeAttribute("aria-current");
-    });
+    document.querySelector(".app").classList.toggle("declined", screen === "cancelled");
     window.scrollTo({ top: 0, behavior: "instant" });
     $(screen).querySelector("h1").focus({ preventScroll: true });
-  }
-
-  async function sequence(prefix, lines, asides = []) {
-    const log = $(`${prefix}-log`);
-    log.replaceChildren();
-    for (let index = 0; index < lines.length; index++) {
-      // Optional presentation metadata; submission and application state stay separate.
-      const step = typeof lines[index] === "string" ? { text: lines[index] } : lines[index];
-      const item = document.createElement("li");
-      item.className = "pending";
-      const label = document.createElement("span");
-      label.textContent = step.text;
-      const status = document.createElement("span");
-      status.textContent = "···";
-      status.setAttribute("aria-label", "In corso");
-      item.append(label, status);
-      log.append(item);
-      log.scrollTop = log.scrollHeight;
-      if (asides.length) $("analysis-aside").textContent = asides[index % asides.length];
-      await wait(step.delay || 360 + Math.random() * 260);
-      status.textContent = step.result || "✓";
-      status.setAttribute("aria-label", step.result || "Completata");
-      item.className = "complete";
-      if (step.detail) {
-        const detail = document.createElement("small");
-        detail.textContent = step.detail;
-        label.append(detail);
-      }
-      log.scrollTop = log.scrollHeight;
-      const value = Math.round(((index + 1) / lines.length) * 100);
-      $(`${prefix}-progress`).value = value;
-      $(`${prefix}-percent`).textContent = `${value}%`;
-    }
   }
 
   $("start").addEventListener("click", async () => {
@@ -71,73 +31,49 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
     state.busy = true;
     $("start").disabled = true;
     show("analysis");
-    await sequence("analysis", [
-      "Inizializzazione algoritmo cena...",
-      "Calcolo livello fame...",
-      "Analisi compatibilità culinaria...",
-      { text: 'Stima probabilità "per me è uguale"...', delay: 1100, result: "87%" },
-      { text: "Controllo secondo stomaco per il dolce...", result: "DISPONIBILE ✓" },
-      { text: 'Simulazione discussione "dove andiamo?"...', result: "ATTENZIONE", detail: "Possibile durata stimata: 47 minuti.", delay: 750 },
-      "Ottimizzazione decisionale...",
-      "Consultazione algoritmo estremamente sofisticato..."
-    ], ["PROBABILITÀ DESSERT: 94.3%", 'RISCHIO "NON SO COSA PRENDERE": MEDIO-ALTO', "INDICE FAME: 8.7/10", "COMPATIBILITÀ PIZZA: ECCELLENTE", "AFFIDABILITÀ DI QUESTI DATI: DISCUTIBILE"]);
-    $("analysis-result").hidden = false;
-    $("analysis-aside").textContent = "Analisi completata con un margine di errore scientificamente discutibile.";
-    $("analysis-result").scrollIntoView({ block: "nearest", behavior: "auto" });
-    await wait(2500);
-    show("briefing");
+    for (const card of document.querySelectorAll(".evening-card")) {
+      card.hidden = false;
+      if (!reducedMotion.matches) await wait(550);
+    }
+    $("essentials-ready").hidden = false;
     state.busy = false;
   });
+  $("continue").addEventListener("click", () => {
+    if (state.screen === "analysis" && !state.busy) show("briefing");
+  });
 
-  let lastRefusal = 0;
+  let lastRefusal = -Infinity;
   $("refuse").addEventListener("click", () => {
     if (state.screen !== "briefing" || state.busy || performance.now() - lastRefusal < 300) return;
     lastRefusal = performance.now();
-    const messages = ["Interessante.", "Il sistema non si aspettava questa risposta.", "Ricalcolo in corso...", "Abbiamo controllato il codice.\nIl pulsante funziona.\nPurtroppo."];
+    const messages = ["Ah.", "Questa non era prevista.", "Posso offrirti la possibilità di ripensarci?", "Ok ok, ho capito 😂"];
     state.refusals = Math.min(state.refusals + 1, 4);
     $("refuse-message").textContent = messages[state.refusals - 1];
-    $("refuse").style.left = state.refusals % 2 ? "0px" : "calc(100% - 120px)";
-    $("refuse").style.top = state.refusals % 2 ? "14px" : "0px";
-    if (state.refusals === 3) {
-      wait(650).then(() => {
-        if (state.screen === "briefing" && state.refusals === 3) {
-          $("refuse-message").textContent = "Strano. Il risultato continua a essere cena.";
-        }
-      });
-    }
+    $("refuse").style.left = state.refusals % 2 ? "calc(50% - 90px)" : "calc(50% - 30px)";
     if (state.refusals === 4) $("really-refuse").hidden = false;
   });
   $("really-refuse").addEventListener("click", async () => {
     if (state.screen !== "briefing" || state.busy) return;
-    state.busy = true;
     show("cancelled");
-    await wait(1200);
+    await wait(1000);
     $("cancelled-aside").hidden = false;
-    state.busy = false;
   });
   function celebrate() {
     if (reducedMotion.matches) return;
-    for (let index = 0; index < 20; index++) {
+    for (let index = 0; index < 16; index++) {
       const particle = document.createElement("i");
       particle.className = "confetto";
       particle.style.left = `${8 + Math.random() * 84}%`;
-      particle.style.background = index % 3 ? "#c7b9ff" : "#f4bb98";
+      particle.style.background = ["#792f3c", "#8a9265", "#c49b56"][index % 3];
       particle.style.animationDelay = `${Math.random() * .4}s`;
       $("confetti").append(particle);
     }
     setTimeout(() => $("confetti").replaceChildren(), 2400);
   }
-  $("accept").addEventListener("click", async () => {
+  $("accept").addEventListener("click", () => {
     if (state.screen !== "briefing" || state.busy) return;
-    state.busy = true;
     show("accepted");
-    await wait(1300);
-    $("accepted-symbol").textContent = "🎉";
-    $("accepted-title").textContent = "RISPOSTA CORRETTA";
-    $("accepted-comment").textContent = "Statisticamente parlando.";
-    $("accepted-ready").hidden = false;
     celebrate();
-    state.busy = false;
   });
   $("configure").addEventListener("click", () => { if (state.screen === "accepted" && !state.busy) show("configuration"); });
 
@@ -152,12 +88,12 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
   $("date").addEventListener("focus", updateMinimum);
   const form = $("mission-form");
   const foodReactions = {
-    "Pizza": "Scelta statisticamente difficile da criticare.",
-    "Sushi": "Algoritmo soddisfatto.",
-    "Carne": "Proteine rilevate.",
-    "Qualcosa di serio": "Attivata la modalità tovagliolo di stoffa.",
-    "Sorprendimi": "Pericoloso livello di fiducia nel sistema.",
-    "Basta che si mangi": "Finalmente dei requisiti tecnici chiari."
+    "Pizza": "Difficile sbagliare.",
+    "Sushi": "Scelta rispettabile.",
+    "Carne": "Messaggio ricevuto.",
+    "Italiano": "Si gioca in casa.",
+    "Sorprendimi": "Questa è molta fiducia.",
+    "Basta che si mangi": "La risposta più concreta finora."
   };
   form.addEventListener("change", (event) => {
     if (event.target.name === "preference") $("food-reaction").textContent = foodReactions[event.target.value];
@@ -181,19 +117,19 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
     let message = "";
     if (!date.value || !date.validity.valid || date.value < today()) {
       invalid = date;
-      message = date.value && date.value < today() ? "I viaggi nel tempo non sono inclusi. Seleziona oggi o una data futura." : "Manca il giorno. L’algoritmo non può indovinarlo.";
+      message = date.value && date.value < today() ? "Scegli oggi o una data futura." : "Scegli il giorno che preferisci.";
     } else if (!time.value || !time.validity.valid) {
       invalid = time;
-      message = "Manca l’ora. Anche un orario approssimativo è un grande progresso.";
+      message = "A che ora ci vediamo? Scegli un orario.";
     } else if (!preference) {
       invalid = form.querySelector('input[name="preference"]');
-      message = "Il dilemma culinario è ancora aperto. Seleziona una preferenza.";
+      message = "Scegli cosa ti andrebbe di mangiare.";
     }
     $("form-error").textContent = message;
     if (invalid) { invalid.setAttribute("aria-invalid", "true"); invalid.focus(); return; }
     state.submitting = true;
     $("submit").disabled = true;
-    $("submit").textContent = "INVIO IN CORSO...";
+    $("submit").textContent = "Un secondo...";
     $("send-error").hidden = true;
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     const payload = {
@@ -221,37 +157,23 @@ const FORM_ENDPOINT = "INSERIRE_ENDPOINT_QUI";
       storage.set("dinner-sent", missionId);
     } catch (error) {
       $("send-error").hidden = false;
-      $("send-detail").textContent = error.message === "configuration" ? "Invio non configurato. Filippo deve completare un ultimo, banalissimo passaggio." : "Le tue scelte sono ancora qui. Puoi riprovare l’invio.";
-      $("submit").textContent = "RIPROVA INVIO";
+      $("send-detail").textContent = error.message === "configuration" ? "Filippo deve ancora attivare la ricezione delle proposte. Le tue scelte sono ancora qui." : "Le tue scelte sono ancora qui. Controlla la connessione e riprova.";
+      $("submit").textContent = "RIPROVA";
       $("submit").disabled = false;
       controls.forEach((control) => { control.disabled = false; });
       state.submitting = false;
       $("send-error").scrollIntoView({ block: "nearest", behavior: "auto" });
       return;
     } finally { clearTimeout(timeout); }
-    show("transmission");
-    await sequence("transmission", [
-      "Salvataggio decisioni importanti...",
-      "Controllo che la data esista realmente...",
-      "Verifica che l’ora sia un concetto valido...",
-      "Preparazione email...",
-      { text: "Tentativo di sembrare un’app professionale...", result: "FALLITO", detail: "L’invio funziona. La professionalità meno." },
-      "Invio proposta..."
-    ]);
-    await wait(500);
-    $("summary-date").textContent = payload["Data proposta"];
+    const [day, month, year] = payload["Data proposta"].split("/").map(Number);
+    $("summary-date").textContent = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(year, month - 1, day, 12));
     $("summary-time").textContent = payload["Ora proposta"];
     $("summary-food").textContent = payload["Preferenza culinaria"];
-    $("summary-food-icon").textContent = { "Pizza": "🍕", "Sushi": "🍣", "Carne": "🥩", "Qualcosa di serio": "🍝", "Sorprendimi": "🎲", "Basta che si mangi": "🍽️" }[payload["Preferenza culinaria"]];
+    $("summary-food-icon").textContent = { "Pizza": "🍕", "Sushi": "🍣", "Carne": "🥩", "Italiano": "🍝", "Sorprendimi": "🎲", "Basta che si mangi": "🍽️" }[payload["Preferenza culinaria"]];
     $("summary").hidden = false;
-    showSuccess();
+    show("success");
     celebrate();
     state.submitting = false;
   });
-  async function showSuccess() {
-    show("success");
-    await wait(1600);
-    if (state.screen === "success") $("success-aside").hidden = false;
-  }
-  if (state.sent) showSuccess();
+  if (state.sent) show("success");
 })();

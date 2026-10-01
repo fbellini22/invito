@@ -1,77 +1,95 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="it">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#121118">
-  <meta name="description" content="Un sistema inutilmente avanzato per risolvere un problema molto semplice. Organizzare una cena.">
-  <title>DINNER PROTOCOL — Tecnologia sproporzionata. Una cena.</title>
+  <meta name="theme-color" content="#f7f1e5">
+  <meta name="description" content="Ti va di andare a cena insieme? Un piccolo invito, una bella serata.">
+  <title>A cena, insieme — Un invito per te</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="./style.css">
   <script src="./app.js" defer></script>
 </head>
 <body>
   <div class="app">
-    <header class="topbar"><a class="brand" href="./" aria-label="Dinner Protocol, inizio"><span class="brand-mark" aria-hidden="true">dp<span>.</span></span> DINNER PROTOCOL <small>v1.0</small></a><span class="connection"><i></i> TUTTO QUASI SOTTO CONTROLLO</span></header>
-    <main id="main">
-      <div class="mission-meta"><span id="mission-id">MISSION ID: —</span><span>SÌ, SERVIVA UN ID.</span></div>
-      <nav class="steps" aria-label="Avanzamento della procedura"><span class="current" aria-current="step">01 <b>INIZIO</b></span><span>02 <b>ANALISI</b></span><span>03 <b>PROPOSTA</b></span><span>04 <b>CALENDARI</b></span></nav>
-
-      <section id="access" class="screen" aria-labelledby="access-title">
-        <div class="eyebrow"><span class="live-dot"></span> GRANDE TECNOLOGIA. PICCOLI PROBLEMI.</div>
-        <h1 id="access-title" tabindex="-1">Un sistema<br><em>inutilmente</em><br>avanzato.</h1>
-        <p class="intro">Per risolvere un problema molto semplice.<br><strong>Organizzare una cena.</strong></p>
-        <div class="software-preview" aria-label="Complessità del sistema: eccessiva. Cene da organizzare: una.">
-          <div class="preview-heading"><span class="app-icon" aria-hidden="true">dp.</span><div>Dinner Engine<small>Una soluzione in cerca di un problema.</small></div><span class="version-pill">1.0</span></div>
-          <div class="computation"><div class="compute-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div><span>COMPLESSITÀ DEL SISTEMA <b>Eccessiva.</b></span></div>
-          <div class="preview-bottom"><span>CENE DA ORGANIZZARE</span><strong>01<span> / una, letteralmente.</span></strong></div>
+    <header class="masthead"><span class="little-star" aria-hidden="true">✷</span><span>a cena, insieme</span><span class="little-star" aria-hidden="true">✷</span></header>
+    <main>
+      <section id="access" class="screen invitation" aria-labelledby="access-title">
+        <p class="eyebrow">C’è una questione importante.</p>
+        <h1 id="access-title" tabindex="-1">Ti va di andare<br>a cena <em>insieme?</em></h1>
+        <div class="dinner-scene" aria-hidden="true">
+          <span class="scene-note">un tavolo per due</span>
+          <div class="tablecloth"><div class="napkin napkin-one"></div><div class="napkin napkin-two"></div><div class="place place-one"><i class="fork"></i><i class="plate"></i><i class="knife"></i></div><div class="place place-two"><i class="fork"></i><i class="plate"></i><i class="knife"></i></div><div class="wine wine-one"><i></i></div><div class="wine wine-two"><i></i></div><div class="candle"><i></i></div><span class="olive olive-one"></span><span class="olive olive-two"></span></div>
+          <span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✧</span>
         </div>
-        <div class="system-status"><span>STATUS SISTEMA</span><strong><i></i> Sorprendentemente operativo</strong></div>
-        <button class="primary" id="start">AVVIA ANALISI <span aria-hidden="true">↗</span></button>
-        <p class="micro centered">Potevamo mandare un messaggio. E invece.</p>
+        <p class="intro">Ho sviluppato un intero sito invece di fare una domanda normale.<br><span>Mi sembrava ragionevole.</span></p>
+        <button class="primary" id="start">VEDIAMO <span aria-hidden="true">→</span></button>
       </section>
-
       <section id="analysis" class="screen" hidden aria-labelledby="analysis-title">
-        <p class="eyebrow">DINNER ENGINE / AL LAVORO</p><h1 id="analysis-title" tabindex="-1">Ci stiamo pensando.<br><em>Fin troppo.</em></h1><p class="intro">Un’infrastruttura sproporzionata sta valutando se dovremmo mangiare insieme.</p>
-        <div class="terminal"><div class="terminal-head"><span><i></i> CALCOLI QUASI SCIENTIFICI</span><span>LIVE</span></div><ol id="analysis-log" class="log" tabindex="0" aria-label="Dettaglio dei calcoli"></ol><p id="analysis-aside" class="terminal-aside" aria-live="polite">Allocazione di risorse decisamente eccessive…</p></div>
-        <div class="progress-label"><span>ELABORAZIONE</span><span id="analysis-percent">0%</span></div><progress id="analysis-progress" max="100" value="0" aria-label="Analisi"></progress>
-        <div id="analysis-result" class="result" hidden role="status"><span>ANALISI COMPLETATA</span><p>Compatibilità cena:</p><strong>98.7<small>%</small></strong><p>Margine di errore: «Preferiamo non parlarne.»</p><p class="conclusion">CONCLUSIONE SCIENTIFICA:<b>Dovremmo andare a cena.</b></p></div>
+        <p class="eyebrow">Gli ingredienti della serata</p>
+        <h1 id="analysis-title" tabindex="-1">Prima, le questioni <em>importanti.</em></h1>
+        <ul class="evening-list" aria-label="Per una bella serata">
+          <li class="evening-card" hidden><span aria-hidden="true">🍝</span><div><h2>Mangiare qualcosa di buono</h2><p>✓ fondamentale</p></div></li>
+          <li class="evening-card" hidden><span aria-hidden="true">🥂</span><div><h2>Bere qualcosa</h2><p>✓ fortemente consigliato</p></div></li>
+          <li class="evening-card" hidden><span aria-hidden="true">💬</span><div><h2>Fare due chiacchiere</h2><p>✓ inevitabile</p></div></li>
+          <li class="evening-card" hidden><span aria-hidden="true">🍰</span><div><h2>Prendere il dolce</h2><p>Ne discuteremo sul posto.</p></div></li>
+        </ul>
+        <div id="essentials-ready" hidden><p class="aside">Direi che ci sono tutti i presupposti.</p><button id="continue" class="primary">CONTINUIAMO <span aria-hidden="true">→</span></button></div>
       </section>
-
-      <section id="briefing" class="screen" hidden aria-labelledby="briefing-title">
-        <p class="eyebrow">PROPOSTA GENERATA DAL SISTEMA</p><h1 id="briefing-title" tabindex="-1">CENA INSIEME<span class="accent">.</span></h1><p class="intro">Tutta questa tecnologia per arrivare qui.</p>
-        <div class="brief-card"><div class="objective"><span class="field-label">OBIETTIVO PRIMARIO</span><p>Mangiare bene.</p></div><div class="objective"><span class="field-label">OBIETTIVO SECONDARIO</span><p>Passare una bella serata.</p></div><div class="objective dessert-objective"><span class="field-label">OBIETTIVO TERZIARIO</span><p>Ordinare il dolce anche dopo aver detto «no no, sono pienissima».</p></div><dl><div><dt>DURATA STIMATA</dt><dd>Dipende da quanto ci mettiamo a scegliere.</dd></div><div><dt>BUDGET CALORICO</dt><dd>Il sistema ha deciso di non monitorarlo.</dd></div><div><dt>DRESS CODE</dt><dd>Quello che ti pare.</dd></div></dl></div>
-        <p class="question">IL SISTEMA RICHIEDE UNA DECISIONE</p><button id="accept" class="primary">CI STO <span aria-hidden="true">✓</span></button>
-        <div id="refuse-zone" class="refuse-zone"><button id="refuse" class="secondary">NO</button></div><p id="refuse-message" class="refuse-message" role="status"></p><button id="really-refuse" class="text-button" hidden>Ok, no davvero</button>
+      <section id="briefing" class="screen proposal" hidden aria-labelledby="briefing-title">
+        <div class="menu-ornament" aria-hidden="true">✧</div><p class="eyebrow">Quindi...</p>
+        <h1 id="briefing-title" tabindex="-1">Cena<em>?</em></h1>
+        <p class="intro">Niente questionari da 47 domande.<br>Promesso.</p>
+        <button id="accept" class="primary">SÌ, CI STO <span aria-hidden="true">♡</span></button>
+        <div id="refuse-zone" class="refuse-zone"><button id="refuse" class="secondary">NO</button></div>
+        <p id="refuse-message" class="refuse-message" role="status"></p>
+        <button id="really-refuse" class="text-button" hidden>No davvero</button>
       </section>
-
-      <section id="accepted" class="screen centered" hidden aria-labelledby="accepted-title"><div id="accepted-symbol" class="seal" aria-hidden="true">···</div><div role="status" aria-live="polite"><p class="eyebrow">GESTIONE DELLE EMOZIONI / BETA</p><h1 id="accepted-title" tabindex="-1">ATTENDERE</h1><p id="accepted-comment" class="intro">Il sistema sta cercando di mantenere un comportamento professionale.</p></div><div id="accepted-ready" hidden><p class="accept-next">Adesso arriva la parte difficile:<br><strong>decidere quando.</strong></p><button id="configure" class="primary">SINCRONIZZA CALENDARI <span aria-hidden="true">→</span></button></div></section>
-
-      <section id="configuration" class="screen" hidden aria-labelledby="configuration-title"><p class="eyebrow">IL VERO COLLO DI BOTTIGLIA</p><h1 id="configuration-title" class="form-title" tabindex="-1">IL PROBLEMA<br>DEI CALENDARI<span class="accent">.</span></h1><p class="intro">Secoli di progresso tecnologico e dobbiamo ancora trovare un giorno in cui siamo liberi entrambi.</p>
+      <section id="accepted" class="screen centered" hidden aria-labelledby="accepted-title">
+        <div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div>
+        <h1 id="accepted-title" tabindex="-1">Ottima <em>scelta.</em></h1>
+        <p class="aside">Totalmente imparziale, ovviamente.</p>
+        <p class="intro spaced">Ora rimane solo il piccolo problema<br>di trovare un giorno.</p>
+        <button id="configure" class="primary">SCEGLIAMO QUANDO <span aria-hidden="true">→</span></button>
+      </section>
+      <section id="configuration" class="screen" hidden aria-labelledby="configuration-title">
+        <p class="eyebrow">Mettiamolo in calendario</p>
+        <h1 id="configuration-title" tabindex="-1">Quando sei <em>libera?</em></h1>
+        <p class="intro">Scegli il giorno che preferisci.</p>
         <form id="mission-form" novalidate>
-          <div class="date-row"><div><label for="date">QUANDO?</label><input id="date" name="date" type="date" required aria-describedby="form-error"></div><div><label for="time">A CHE ORA?</label><input id="time" name="time" type="time" required aria-describedby="form-error"></div></div>
-          <fieldset id="preferences"><legend>QUESTIONE FONDAMENTALE</legend><p class="food-question">Cosa mangiamo?</p><div class="food-grid">
-            <label class="food"><input type="radio" name="preference" value="Pizza" required><span><span aria-hidden="true">🍕</span> Pizza</span></label>
-            <label class="food"><input type="radio" name="preference" value="Sushi"><span><span aria-hidden="true">🍣</span> Sushi</span></label>
-            <label class="food"><input type="radio" name="preference" value="Carne"><span><span aria-hidden="true">🥩</span> Carne</span></label>
-            <label class="food"><input type="radio" name="preference" value="Qualcosa di serio"><span><span aria-hidden="true">🍝</span> Qualcosa di serio</span></label>
-            <label class="food"><input type="radio" name="preference" value="Sorprendimi"><span><span aria-hidden="true">🎲</span> Sorprendimi</span></label>
-            <label class="food"><input type="radio" name="preference" value="Basta che si mangi"><span><span aria-hidden="true">🍽️</span> Basta che si mangi</span></label>
-          </div><p id="food-reaction" class="food-reaction" role="status"></p></fieldset>
-          <label for="notes">ALTRE RICHIESTE? <span class="optional">/ FACOLTATIVO</span></label><textarea id="notes" name="notes" rows="3" maxlength="2000" placeholder="Allergie, richieste, pretese, trattative diplomatiche sul dessert..."></textarea>
-          <p id="form-error" class="error" role="alert"></p><div id="send-error" class="error-panel" role="alert" hidden><strong>INVIO NON RIUSCITO</strong><p>Anche i sistemi inutilmente avanzati hanno una giornata no.</p><p id="send-detail"></p></div>
-          <button id="submit" class="primary" type="submit">INVIA PROPOSTA <span aria-hidden="true">↗</span></button><p class="micro centered">Data, ora, preferenza e note saranno inviate a Filippo tramite Formspree. Fine della raccolta dati.</p>
+          <div class="date-row"><div><label for="date">Il giorno</label><input id="date" name="date" type="date" required aria-describedby="form-error"></div><div><label for="time">A che ora?</label><input id="time" name="time" type="time" required aria-describedby="form-error"></div></div>
+          <fieldset id="preferences"><legend><span class="eyebrow">Domanda fondamentale.</span><span class="food-title">Cosa si mangia?</span></legend>
+            <div class="food-grid">
+              <label class="food"><input type="radio" name="preference" value="Pizza" required aria-describedby="form-error"><span><span aria-hidden="true">🍕</span>Pizza</span></label>
+              <label class="food"><input type="radio" name="preference" value="Sushi"><span><span aria-hidden="true">🍣</span>Sushi</span></label>
+              <label class="food"><input type="radio" name="preference" value="Carne"><span><span aria-hidden="true">🥩</span>Carne</span></label>
+              <label class="food"><input type="radio" name="preference" value="Italiano"><span><span aria-hidden="true">🍝</span>Italiano</span></label>
+              <label class="food"><input type="radio" name="preference" value="Sorprendimi"><span><span aria-hidden="true">🎲</span>Sorprendimi</span></label>
+              <label class="food"><input type="radio" name="preference" value="Basta che si mangi"><span><span aria-hidden="true">🍽️</span>Basta che si mangi</span></label>
+            </div><p id="food-reaction" class="food-reaction" role="status"></p>
+          </fieldset>
+          <label class="notes-title" for="notes">Qualcos’altro? <small>Facoltativo</small></label>
+          <p class="field-hint" id="notes-hint">Richieste, preferenze, minacce sul ristorante...</p>
+          <textarea id="notes" name="notes" rows="3" maxlength="2000" placeholder="Scrivi pure qui..." aria-describedby="notes-hint"></textarea>
+          <p id="form-error" class="error" role="alert"></p>
+          <div id="send-error" class="error-panel" role="alert" hidden><strong>Non sono riuscito a ricevere la proposta.</strong><p id="send-detail"></p></div>
+          <button id="submit" class="primary" type="submit">MANDA LA PROPOSTA <span aria-hidden="true">→</span></button>
+          <p class="privacy">La proposta arriverà a Filippo via email, tramite Formspree.</p>
         </form>
       </section>
-
-      <section id="transmission" class="screen" hidden aria-labelledby="transmission-title"><p class="eyebrow">BUROCRAZIA DIGITALE / QUASI FINITA</p><h1 id="transmission-title" tabindex="-1">Una semplice email.<br><em>Sei passaggi.</em></h1><p class="intro">La proposta è stata ricevuta. Il software sente comunque il bisogno di fare questo.</p><div class="terminal"><div class="terminal-head">ELABORAZIONE DECISIONI IMPORTANTI</div><ol id="transmission-log" class="log" tabindex="0" aria-label="Dettaglio dell’elaborazione"></ol></div><div class="progress-label"><span>COMPLETAMENTO PROCEDURA</span><span id="transmission-percent">0%</span></div><progress id="transmission-progress" max="100" value="0" aria-label="Elaborazione della proposta"></progress></section>
-
-      <section id="success" class="screen" hidden aria-labelledby="success-title"><div class="seal" aria-hidden="true">✓</div><p class="eyebrow">PROBLEMA RISOLTO. PIÙ O MENO.</p><h1 id="success-title" tabindex="-1">FATTO <span class="accent">✓</span></h1><p class="intro">La proposta è stata inviata.</p><dl id="summary" class="summary" hidden><div><dt><span aria-hidden="true">📅</span> DATA</dt><dd id="summary-date"></dd></div><div><dt><span aria-hidden="true">🕐</span> ORA</dt><dd id="summary-time"></dd></div><div><dt><span id="summary-food-icon" aria-hidden="true">🍽️</span> A TAVOLA</dt><dd id="summary-food"></dd></div></dl><p class="notified"><span class="live-dot"></span> Filippo è stato notificato.</p><p class="micro">In attesa di una sua conferma. Il software ha fatto la sua parte.</p><p class="closing">Ora puoi chiudere questa pagina e tornare alle tue normali attività.</p><p id="success-aside" class="micro punchline" hidden>Tipo pensare a cosa ordinare.</p></section>
-
-      <section id="cancelled" class="screen centered" hidden aria-labelledby="cancelled-title"><div class="seal neutral" aria-hidden="true">✓</div><p class="eyebrow">FEEDBACK RICEVUTO</p><h1 id="cancelled-title" tabindex="-1">RICHIESTA<br>REGISTRATA</h1><p class="intro">Il sistema accetta la decisione.</p><p id="cancelled-aside" class="micro" hidden>Con una certa delusione statistica.</p></section>
-      <noscript><p class="error-panel">Per avviare DINNER PROTOCOL è necessario abilitare JavaScript nel browser.</p></noscript>
+      <section id="success" class="screen centered" hidden aria-labelledby="success-title">
+        <div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div>
+        <h1 id="success-title" tabindex="-1">È <em>fatta.</em></h1><p class="intro">Ho ricevuto la tua proposta.</p>
+        <div id="summary" class="summary" hidden><span class="eyebrow">Ci teniamo una serata</span><p id="summary-date"></p><p id="summary-time"></p><p class="summary-food"><span id="summary-food-icon" aria-hidden="true"></span> <span id="summary-food"></span></p><span class="receipt-flower" aria-hidden="true">✷</span></div>
+        <p class="closing">Adesso tocca a me<br>organizzare il resto.</p><p class="aside">Pressione assolutamente inesistente.</p>
+      </section>
+      <section id="cancelled" class="screen centered" hidden aria-labelledby="cancelled-title">
+        <h1 id="cancelled-title" tabindex="-1">Ah.</h1>
+        <div class="refusal-after" aria-live="polite"><p id="cancelled-aside" class="intro" hidden>Beh, questo sito poteva tranquillamente essere un messaggio.</p></div>
+      </section>
+      <noscript><p class="error-panel">Per aprire l’invito, abilita JavaScript nel browser.</p></noscript>
     </main>
-    <footer><span>PROGETTATO PER COMPLICARE.</span><span>OTTIMIZZATO PER <b>CENARE.</b></span></footer>
+    <footer><span>Buon cibo. Buona compagnia.</span><span class="footer-flower" aria-hidden="true">✷</span></footer>
   </div><div id="confetti" aria-hidden="true"></div>
 </body>
 </html>
