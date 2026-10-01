@@ -186,15 +186,6 @@ h1 em{
   margin:0 0 26px;
   max-width:400px
 }
-.radar small{
-  position:absolute;
-  bottom:-20px;
-  width:100%;
-  text-align:center;
-  font:7px var(--mono);
-  letter-spacing:2px;
-  color:#829d8b
-}
 .primary{
   width:100%;
   min-height:56px;
