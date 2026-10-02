@@ -1,28 +1,18 @@
-webkit small: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit se: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit standard: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit pro: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit max: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit desktop: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-webkit: PASS normal motion; no automatic advance before/after choices; 1.2s walks only; no idle timers
-webkit: PASS reduced motion; no automatic advance before/after choices; 1.2s walks only; no idle timers
-webkit: PASS HTTP/invalid JSON/null/false/string/missing/timeout, identical state on every retry
-webkit: PASS four refusals and real decline, no POST
-webkit: PASS unavailable storage fallback
-chromium small: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium se: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium standard: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium pro: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium max: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium desktop: PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow
-chromium: PASS normal motion; no automatic advance before/after choices; 1.2s walks only; no idle timers
-chromium: PASS reduced motion; no automatic advance before/after choices; 1.2s walks only; no idle timers
-chromium: PASS HTTP/invalid JSON/null/false/string/missing/timeout, identical state on every retry
-chromium: PASS four refusals and real decline, no POST
-chromium: PASS unavailable storage fallback
-webkit PASS Molto: payload, pending messenger, confirmed delivery, final recap
-webkit PASS Il giusto: payload, pending messenger, confirmed delivery, final recap
-webkit PASS Quale piano?: payload, pending messenger, confirmed delivery, final recap
-chromium PASS Molto: payload, pending messenger, confirmed delivery, final recap
-chromium PASS Il giusto: payload, pending messenger, confirmed delivery, final recap
-chromium PASS Quale piano?: payload, pending messenger, confirmed delivery, final recap
+webkit small: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit se: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit standard: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit pro: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit max: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit desktop: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+webkit: PASS normal motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
+webkit: PASS reduced motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
+webkit: PASS refusal unchanged
+chromium small: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium se: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium standard: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium pro: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium max: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium desktop: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
+chromium: PASS normal motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
+chromium: PASS reduced motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
+chromium: PASS refusal unchanged

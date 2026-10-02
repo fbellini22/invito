@@ -98,9 +98,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
   }
   function updateChoices() {
     const locked = state.busy || state.submitting;
-    $("food-next").disabled = locked || !routes[state.quest.food];
-    $("date-next").disabled = locked || !validDate();
-    $("plan-next").disabled = locked || !validPlan();
+    form.querySelectorAll("input, textarea, button").forEach((control) => { control.disabled = locked; });
     $("date-reaction").hidden = !validDate();
     if (validDate()) $("chosen-date").textContent = formatDate(state.quest.date);
   }
@@ -131,14 +129,16 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       form.querySelectorAll('[name="planConfidence"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
       $("confidence-reaction").textContent = confidenceReactions[target.value];
       $("confidence-reaction").hidden = false;
-      $("plan-next").hidden = false;
     } else if (["date", "notes"].includes(target.name)) {
       state.quest[target.name] = target.value;
     }
     updateChoices();
+    const chapter = { preference: "food", date: "date", planConfidence: "plan" }[target.name];
+    if (chapter === state.chapter && (target.name !== "date" || validDate())) advance();
   }
   form.addEventListener("input", recordChoice);
   form.addEventListener("change", recordChoice);
+  form.querySelectorAll('input[type="radio"]').forEach((radio) => radio.addEventListener("click", recordChoice));
 
   function showChapter(chapter, focus = true) {
     state.chapter = chapter;
@@ -215,21 +215,27 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     show("configuration");
     travelTo("food");
   });
+  function finishReaction() {
+    const target = state.travel.target;
+    cancelWalk();
+    if (target && state.screen === "configuration") travelTo(target);
+  }
   function advance() {
     if (state.screen !== "configuration" || state.busy || state.submitting) return;
     const next = { food: "date", date: "plan", plan: "arrival" }[state.chapter];
-    if (next && validate(state.chapter)) travelTo(next);
+    if (!next || !validate(state.chapter)) return;
+    state.busy = true;
+    state.travel.target = next;
+    updateChoices();
+    state.travel.timer = setTimeout(finishReaction, reducedMotion.matches ? 900 : 1100);
   }
-  ["food-next", "date-next", "plan-next"].forEach((id) => $(id).addEventListener("click", () => {
-    if (state.chapter === id.split("-")[0]) advance();
-  }));
   document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
     if (state.screen === "configuration" && !state.busy && !state.submitting && stops.indexOf(button.dataset.back) < stops.indexOf(state.chapter)) showChapter(button.dataset.back);
   }));
   // Resolve only the in-between walk on backgrounding; the next choice still waits.
   window.addEventListener("pagehide", finishWalk);
   document.addEventListener("visibilitychange", () => { if (document.hidden && state.travel.target) finishWalk(); });
-  reducedMotion.addEventListener("change", () => { if (reducedMotion.matches && state.travel.target) finishWalk(); });
+  reducedMotion.addEventListener("change", () => { if (reducedMotion.matches && state.chapter === "travel" && state.travel.target) finishWalk(); });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
