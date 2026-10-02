@@ -1,18 +1,18 @@
-webkit small 320x568: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-webkit se 375x667: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-webkit standard 390x844: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-webkit pro 393x852: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-webkit max 430x932: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-webkit desktop 1440x900: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit small 320x568: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit se 375x667: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit standard 390x844: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit pro 393x852: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit max 430x932: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+webkit desktop 1440x900: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
 webkit: PASS HTTP/JSON/negative/unexpected/timeout responses, retry, empty notes
-webkit: PASS normal animations, progressive cards, real refusal without POST, particle cleanup
+webkit: PASS normal animations, timed reveal, real refusal without POST, particle cleanup
 webkit: PASS storage unavailable fallback
-chromium small 320x568: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-chromium se 375x667: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-chromium standard 390x844: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-chromium pro 393x852: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-chromium max 430x932: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
-chromium desktop 1440x900: PASS chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium small 320x568: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium se 375x667: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium standard 390x844: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium pro 393x852: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium max 430x932: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
+chromium desktop 1440x900: PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow
 chromium: PASS HTTP/JSON/negative/unexpected/timeout responses, retry, empty notes
-chromium: PASS normal animations, progressive cards, real refusal without POST, particle cleanup
+chromium: PASS normal animations, timed reveal, real refusal without POST, particle cleanup
 chromium: PASS storage unavailable fallback

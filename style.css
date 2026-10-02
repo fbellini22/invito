@@ -995,3 +995,24 @@ body[data-scene=food] .world-art,body[data-scene=notes] .world-art {
     display:none
   }
 }
+
+/* Opening narrative: reuse the established palette, type and controls. */
+.quest-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px 16px; text-align: left; padding: 24px 0; margin: 25px 0 32px; border-block: 1px solid var(--line); }
+.quest-facts dt { font-size: 8px; letter-spacing: 1.4px; text-transform: uppercase; color: var(--gold); line-height: 1.7; margin-bottom: 7px; }
+.quest-facts dd { font: 16px/1.45 var(--serif); margin: 0; }
+#access h1 { font-size: clamp(32px, 8.5vw, 46px); overflow-wrap: break-word; }
+.reveal-status { font: 500 11px/1.8 var(--sans); letter-spacing: 2.3px; color: var(--gold); }
+.reveal-heading { font: 400 clamp(38px, 10vw, 54px)/1.1 var(--serif); letter-spacing: -1.5px; margin: 28px 0; text-wrap: balance; }
+.reveal-heading em { color: #e2bc7f; font-weight: 400; }
+#reveal { min-height: 420px; }
+#reveal-objective, #reveal-punchline { animation: arrive .55s ease both; }
+#reveal-punchline .aside { margin: 16px 0 32px; }
+.quest-log { border-block: 1px solid var(--line); padding: 25px 0; margin: 25px 0 32px; }
+.quest-log .eyebrow { margin-bottom: 12px; }
+.main-objective { font: 24px/1.4 var(--serif); margin: 0 0 30px; }
+.quest-objectives { list-style: none; padding: 0; margin: 0; }
+.quest-objectives li { position: relative; padding-left: 24px; margin: 16px 0; font-size: 14px; line-height: 1.7; color: var(--muted); }
+.quest-objectives li::before { content: '◇'; position: absolute; left: 0; color: var(--gold); }
+.quest-reward { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 23px; }
+.quest-reward p { font: italic 18px/1.6 var(--serif); margin: 0; }
+@media (prefers-reduced-motion: reduce) { #reveal-objective, #reveal-punchline { animation: none; } }

@@ -14,7 +14,7 @@ Apri http://127.0.0.1:8000. Il sito può essere esplorato anche aprendo index.ht
 
 ## Capitoli e logica
 
-Prologo → preparativi → quest → accettazione → data/ora → cibo → messaggio → proposta ricevuta. Il quarto rifiuto rende disponibile NO DAVVERO: conclude il percorso senza inviare nulla.
+Nuova quest → ACCETTA → rivelazione «Organizzare una cena» → diario → data/ora → cibo → messaggio → proposta ricevuta. La prima schermata, il titolo della scheda, intestazione e footer non anticipano la cena. IGNORA mantiene quattro tentativi; IGNORA DAVVERO conclude il percorso senza inviare nulla. La rivelazione appare in due tempi (650 ms + 850 ms), senza attese con movimento ridotto.
 
 Un unico form contiene tre capitoli. Avanti valida prima data/ora, poi la preferenza. I pulsanti indietro conservano tutti i valori. Prima del POST vengono ricontrollati anche i campi nei capitoli precedenti; un errore riapre il capitolo corretto e porta il focus al campo. Invio da tastiera nei primi capitoli avanza senza spedire la proposta.
 
@@ -47,7 +47,7 @@ La suite intercetta tutti i POST: non invia email vere.
 
 Oppure python tests/verify.py (wrapper compatibile). Gli strumenti locali in .test-tools e .test-browsers restano esclusi da Git. tests/results.txt contiene gli esiti; tests/screenshots/rpg-* contiene le anteprime del redesign.
 
-Browser: Chromium e WebKit. Viewport: 320×568, iPhone SE 375×667, standard 390×844, Pro 393×852, Max 430×932, desktop 1440×900. Copertura: capitoli, 4 rifiuti e uscita reale, campi obbligatori, passato, sei preferenze, avanti/indietro, note, viewport ridotta, errori HTTP/rete/JSON, timeout, retry, richieste pendenti, doppi invii, payload, riepilogo, refresh, sessionStorage negato e animazioni con/senza movimento ridotto.
+Browser: Chromium e WebKit. Viewport: 320×568, iPhone SE 375×667, standard 390×844, Pro 393×852, Max 430×932, desktop 1440×900. Copertura: capitoli, 4 tentativi IGNORA e uscita reale, campi obbligatori, passato, sei preferenze, avanti/indietro, note, viewport ridotta, errori HTTP/rete/JSON, timeout, retry, richieste pendenti, doppi invii, payload, riepilogo, refresh, sessionStorage negato e rivelazione temporizzata con/senza movimento ridotto.
 
 ## Limiti da verificare su dispositivo
 

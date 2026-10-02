@@ -27,34 +27,33 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     $(screen).querySelector(screen === "configuration" ? ".form-chapter:not([hidden]) h1" : "h1").focus({ preventScroll: true });
   }
 
-  $("start").addEventListener("click", async () => {
-    if (state.busy || state.screen !== "access") return;
+  $("accept").addEventListener("click", async () => {
+    if (state.screen !== "access" || state.busy) return;
     state.busy = true;
-    $("start").disabled = true;
-    show("analysis");
-    for (const card of document.querySelectorAll(".evening-card")) {
-      card.hidden = false;
-      if (!reducedMotion.matches) await wait(550);
-    }
-    $("essentials-ready").hidden = false;
+    $("accept").disabled = true;
+    show("reveal");
+    if (!reducedMotion.matches) await wait(650);
+    $("reveal-objective").hidden = false;
+    if (!reducedMotion.matches) await wait(850);
+    $("reveal-punchline").hidden = false;
     state.busy = false;
   });
   $("continue").addEventListener("click", () => {
-    if (state.screen === "analysis" && !state.busy) show("briefing");
+    if (state.screen === "reveal" && !state.busy) show("journal");
   });
 
   let lastRefusal = -Infinity;
   $("refuse").addEventListener("click", () => {
-    if (state.screen !== "briefing" || state.busy || performance.now() - lastRefusal < 300) return;
+    if (state.screen !== "access" || state.busy || performance.now() - lastRefusal < 300) return;
     lastRefusal = performance.now();
-    const messages = ["Ah.", "Questa non era prevista.", "Posso offrirti la possibilità di ripensarci?", "Ok ok, ho capito."];
+    const messages = ["Ah.", "Questa non era prevista.", "Neanche un’occhiata alla ricompensa?", "Ok ok, ho capito."];
     state.refusals = Math.min(state.refusals + 1, 4);
     $("refuse-message").textContent = messages[state.refusals - 1];
     $("refuse").style.left = state.refusals % 2 ? "calc(50% - 90px)" : "calc(50% - 30px)";
     if (state.refusals === 4) $("really-refuse").hidden = false;
   });
   $("really-refuse").addEventListener("click", async () => {
-    if (state.screen !== "briefing" || state.busy) return;
+    if (state.screen !== "access" || state.busy) return;
     show("cancelled");
     await wait(1000);
     $("cancelled-aside").hidden = false;
@@ -71,12 +70,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     }
     setTimeout(() => $("confetti").replaceChildren(), 2400);
   }
-  $("accept").addEventListener("click", () => {
-    if (state.screen !== "briefing" || state.busy) return;
-    show("accepted");
-    celebrate();
-  });
-  $("configure").addEventListener("click", () => { if (state.screen === "accepted" && !state.busy) show("configuration"); });
+  $("configure").addEventListener("click", () => { if (state.screen === "journal" && !state.busy) show("configuration"); });
 
   function today() {
     const date = new Date();
