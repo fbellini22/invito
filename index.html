@@ -1,94 +1,19 @@
-﻿<!doctype html>
-<html lang="it">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#f7f1e5">
-  <meta name="description" content="Ti va di andare a cena insieme? Un piccolo invito, una bella serata.">
-  <title>A cena, insieme — Un invito per te</title>
-  <link rel="icon" href="data:,">
-  <link rel="stylesheet" href="./style.css">
-  <script src="./app.js" defer></script>
-</head>
-<body>
-  <div class="app">
-    <header class="masthead"><span class="little-star" aria-hidden="true">✷</span><span>a cena, insieme</span><span class="little-star" aria-hidden="true">✷</span></header>
-    <main>
-      <section id="access" class="screen invitation" aria-labelledby="access-title">
-        <p class="eyebrow">C’è una questione importante.</p>
-        <h1 id="access-title" tabindex="-1">Ti va di andare<br>a cena <em>insieme?</em></h1>
-        <div class="dinner-scene" aria-hidden="true">
-          <span class="scene-note">un tavolo per due</span>
-          <div class="tablecloth"><div class="napkin napkin-one"></div><div class="napkin napkin-two"></div><div class="place place-one"><i class="fork"></i><i class="plate"></i><i class="knife"></i></div><div class="place place-two"><i class="fork"></i><i class="plate"></i><i class="knife"></i></div><div class="wine wine-one"><i></i></div><div class="wine wine-two"><i></i></div><div class="candle"><i></i></div><span class="olive olive-one"></span><span class="olive olive-two"></span></div>
-          <span class="scene-spark spark-one">✧</span><span class="scene-spark spark-two">✧</span>
-        </div>
-        <p class="intro">Ho sviluppato un intero sito invece di fare una domanda normale.<br><span>Mi sembrava ragionevole.</span></p>
-        <button class="primary" id="start">VEDIAMO <span aria-hidden="true">→</span></button>
-      </section>
-      <section id="analysis" class="screen" hidden aria-labelledby="analysis-title">
-        <p class="eyebrow">Gli ingredienti della serata</p>
-        <h1 id="analysis-title" tabindex="-1">Prima, le questioni <em>importanti.</em></h1>
-        <ul class="evening-list" aria-label="Per una bella serata">
-          <li class="evening-card" hidden><span aria-hidden="true">🍝</span><div><h2>Mangiare qualcosa di buono</h2><p>✓ fondamentale</p></div></li>
-          <li class="evening-card" hidden><span aria-hidden="true">🥂</span><div><h2>Bere qualcosa</h2><p>✓ fortemente consigliato</p></div></li>
-          <li class="evening-card" hidden><span aria-hidden="true">💬</span><div><h2>Fare due chiacchiere</h2><p>✓ inevitabile</p></div></li>
-          <li class="evening-card" hidden><span aria-hidden="true">🍰</span><div><h2>Prendere il dolce</h2><p>Ne discuteremo sul posto.</p></div></li>
-        </ul>
-        <div id="essentials-ready" hidden><p class="aside">Direi che ci sono tutti i presupposti.</p><button id="continue" class="primary">CONTINUIAMO <span aria-hidden="true">→</span></button></div>
-      </section>
-      <section id="briefing" class="screen proposal" hidden aria-labelledby="briefing-title">
-        <div class="menu-ornament" aria-hidden="true">✧</div><p class="eyebrow">Quindi...</p>
-        <h1 id="briefing-title" tabindex="-1">Cena<em>?</em></h1>
-        <p class="intro">Niente questionari da 47 domande.<br>Promesso.</p>
-        <button id="accept" class="primary">SÌ, CI STO <span aria-hidden="true">♡</span></button>
-        <div id="refuse-zone" class="refuse-zone"><button id="refuse" class="secondary">NO</button></div>
-        <p id="refuse-message" class="refuse-message" role="status"></p>
-        <button id="really-refuse" class="text-button" hidden>No davvero</button>
-      </section>
-      <section id="accepted" class="screen centered" hidden aria-labelledby="accepted-title">
-        <div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div>
-        <h1 id="accepted-title" tabindex="-1">Ottima <em>scelta.</em></h1>
-        <p class="aside">Totalmente imparziale, ovviamente.</p>
-        <p class="intro spaced">Ora rimane solo il piccolo problema<br>di trovare un giorno.</p>
-        <button id="configure" class="primary">SCEGLIAMO QUANDO <span aria-hidden="true">→</span></button>
-      </section>
-      <section id="configuration" class="screen" hidden aria-labelledby="configuration-title">
-        <p class="eyebrow">Mettiamolo in calendario</p>
-        <h1 id="configuration-title" tabindex="-1">Quando sei <em>libera?</em></h1>
-        <p class="intro">Scegli il giorno che preferisci.</p>
-        <form id="mission-form" novalidate>
-          <div class="date-row"><div><label for="date">Il giorno</label><input id="date" name="date" type="date" required aria-describedby="form-error"></div><div><label for="time">A che ora?</label><input id="time" name="time" type="time" required aria-describedby="form-error"></div></div>
-          <fieldset id="preferences"><legend><span class="eyebrow">Domanda fondamentale.</span><span class="food-title">Cosa si mangia?</span></legend>
-            <div class="food-grid">
-              <label class="food"><input type="radio" name="preference" value="Pizza" required aria-describedby="form-error"><span><span aria-hidden="true">🍕</span>Pizza</span></label>
-              <label class="food"><input type="radio" name="preference" value="Sushi"><span><span aria-hidden="true">🍣</span>Sushi</span></label>
-              <label class="food"><input type="radio" name="preference" value="Carne"><span><span aria-hidden="true">🥩</span>Carne</span></label>
-              <label class="food"><input type="radio" name="preference" value="Italiano"><span><span aria-hidden="true">🍝</span>Italiano</span></label>
-              <label class="food"><input type="radio" name="preference" value="Sorprendimi"><span><span aria-hidden="true">🎲</span>Sorprendimi</span></label>
-              <label class="food"><input type="radio" name="preference" value="Basta che si mangi"><span><span aria-hidden="true">🍽️</span>Basta che si mangi</span></label>
-            </div><p id="food-reaction" class="food-reaction" role="status"></p>
-          </fieldset>
-          <label class="notes-title" for="notes">Qualcos’altro? <small>Facoltativo</small></label>
-          <p class="field-hint" id="notes-hint">Richieste, preferenze, minacce sul ristorante...</p>
-          <textarea id="notes" name="notes" rows="3" maxlength="2000" placeholder="Scrivi pure qui..." aria-describedby="notes-hint"></textarea>
-          <p id="form-error" class="error" role="alert"></p>
-          <div id="send-error" class="error-panel" role="alert" hidden><strong>Non sono riuscito a ricevere la proposta.</strong><p id="send-detail"></p></div>
-          <button id="submit" class="primary" type="submit">MANDA LA PROPOSTA <span aria-hidden="true">→</span></button>
-        </form>
-      </section>
-      <section id="success" class="screen centered" hidden aria-labelledby="success-title">
-        <div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div>
-        <h1 id="success-title" tabindex="-1">È <em>fatta.</em></h1><p class="intro">Ho ricevuto la tua proposta.</p>
-        <div id="summary" class="summary" hidden><span class="eyebrow">Ci teniamo una serata</span><p id="summary-date"></p><p id="summary-time"></p><p class="summary-food"><span id="summary-food-icon" aria-hidden="true"></span> <span id="summary-food"></span></p><span class="receipt-flower" aria-hidden="true">✷</span></div>
-        <p class="closing">Adesso tocca a me<br>organizzare il resto.</p><p class="aside">Pressione assolutamente inesistente.</p>
-      </section>
-      <section id="cancelled" class="screen centered" hidden aria-labelledby="cancelled-title">
-        <h1 id="cancelled-title" tabindex="-1">Ah.</h1>
-        <div class="refusal-after" aria-live="polite"><p id="cancelled-aside" class="intro" hidden>Beh, questo sito poteva tranquillamente essere un messaggio.</p></div>
-      </section>
-      <noscript><p class="error-panel">Per aprire l’invito, abilita JavaScript nel browser.</p></noscript>
-    </main>
-    <footer><span>Buon cibo. Buona compagnia.</span><span class="footer-flower" aria-hidden="true">✷</span></footer>
-  </div><div id="confetti" aria-hidden="true"></div>
-</body>
-</html>
+<!doctype html>
+<html lang="it"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"><meta name="theme-color" content="#111b1c"><meta name="description" content="Una piccola quest. Un tavolo per due. L’avventura comincia con una domanda."><title>La quest della cena — Un’avventura per due</title><link rel="icon" href="data:,"><link rel="stylesheet" href="./style.css"><script src="./app.js" defer></script></head>
+<body data-scene="access">
+<div class="world" aria-hidden="true"><div class="world-art"></div><div class="world-shade"></div><span class="world-star">✦</span></div>
+<div class="app"><header class="masthead"><span class="brand-mark" aria-hidden="true">✧</span><span>CRONACHE DI UNA CENA</span><span class="edition">UN’AVVENTURA PER DUE</span></header>
+<aside class="landscape-caption" aria-hidden="true"><span class="caption-rule"></span><span>Oltre i soliti programmi.</span><small>DA QUALCHE PARTE, UN TAVOLO CI ASPETTA.</small></aside>
+<main>
+<section id="access" class="screen invitation" aria-labelledby="access-title"><p class="eyebrow">Una nuova quest è disponibile</p><h1 id="access-title" tabindex="-1">C’è una questione<br><em>importante.</em></h1><div class="ornament" aria-hidden="true"><span>✧</span></div><p class="quest-question">Ti va di andare<br><strong>a cena insieme?</strong></p><p class="intro">Ho sviluppato un intero sito invece di fare una domanda normale.</p><p class="aside">Mi sembrava ragionevole.</p><button class="primary" id="start">SCOPRI LA QUEST <span aria-hidden="true">→</span></button><p class="chapter-foot">PROLOGO <span aria-hidden="true">·</span> IL PRIMO PASSO</p></section>
+<section id="analysis" class="screen" hidden aria-labelledby="analysis-title"><p class="eyebrow">Capitolo I · I preparativi</p><h1 id="analysis-title" tabindex="-1">Prima, le questioni <em>importanti.</em></h1><ul class="evening-list" aria-label="Obiettivi della serata"><li class="evening-card" hidden><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="7"/><path d="M5 9v11q0 5 4 5V39M9 9v16M13 9v11q0 5-4 5M41 9v30m0-30q-7 7-5 16h5"/></svg><div><h2>Mangiare qualcosa di buono.</h2><p>Fondamentale.</p></div><span class="objective-check" aria-hidden="true">✓</span></li><li class="evening-card" hidden><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6h18l-2 15q-7 10-14 0ZM24 26v14m-8 0h16M16 16h16"/></svg><div><h2>Bere qualcosa.</h2><p>Fortemente consigliato.</p></div><span class="objective-check" aria-hidden="true">✓</span></li><li class="evening-card" hidden><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M7 10h34v24H22L12 41v-7H7ZM15 18h18m-18 8h12"/></svg><div><h2>Fare due chiacchiere.</h2><p>Inevitabile.</p></div><span class="objective-check" aria-hidden="true">✓</span></li><li class="evening-card" hidden><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 24 34 10l6 14v16H9ZM9 29q8 7 15 0t16 0M24 15V5m-3 3 3-5 3 5"/></svg><div><h2>Prendere il dolce.</h2><p>Ne discuteremo sul posto.</p></div><span class="objective-check" aria-hidden="true">✓</span></li></ul><div id="essentials-ready" hidden><p class="aside">Direi che ci sono tutti i presupposti.</p><button id="continue" class="primary">AVANTI <span aria-hidden="true">→</span></button></div></section>
+<section id="briefing" class="screen proposal" hidden aria-labelledby="briefing-title"><div class="quest-seal" aria-hidden="true"><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6h18l-2 15q-7 10-14 0ZM24 26v14m-8 0h16M16 16h16"/></svg></div><p class="eyebrow">Quindi...</p><h1 id="briefing-title" tabindex="-1">Cena<em>?</em></h1><p class="intro">Niente questionari da 47 domande.<br>Promesso.</p><button id="accept" class="primary">ACCETTA LA QUEST <span aria-hidden="true">✧</span></button><div id="refuse-zone" class="refuse-zone"><button id="refuse" class="secondary">RIFIUTA</button></div><p id="refuse-message" class="refuse-message" role="status"></p><button id="really-refuse" class="text-button" hidden>NO DAVVERO</button></section>
+<section id="accepted" class="screen centered" hidden aria-labelledby="accepted-title"><p class="eyebrow">Quest accettata</p><div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div><h1 id="accepted-title" tabindex="-1">Ottima <em>scelta.</em></h1><p class="aside">Totalmente imparziale, ovviamente.</p><div class="ornament" aria-hidden="true"><span>✧</span></div><p class="intro">Rimane soltanto un piccolo ostacolo...<br><span>Trovarci liberi lo stesso giorno.</span></p><button id="configure" class="primary">CONTINUA <span aria-hidden="true">→</span></button></section>
+<section id="configuration" class="screen" hidden aria-label="Organizza la cena"><form id="mission-form" novalidate>
+<div class="form-chapter" id="date-chapter"><p class="eyebrow">Capitolo II · La mappa del tempo</p><h1 id="configuration-title" tabindex="-1">Quando sei <em>libera?</em></h1><p class="intro">Scegli il giorno che preferisci.</p><div class="map-paper"><div class="map-art" aria-hidden="true"><span>Un giorno, due avventurieri.</span></div><div class="date-row"><div><label for="date">Il giorno</label><input id="date" name="date" type="date" required aria-describedby="form-error"></div><div><label for="time">A che ora?</label><input id="time" name="time" type="time" required aria-describedby="form-error"></div></div><span class="paper-caption">LA META È SEMPLICE. IL CALENDARIO, MENO.</span></div><button id="date-next" class="primary" type="button">AVANTI <span aria-hidden="true">→</span></button></div>
+<div class="form-chapter" id="food-chapter" hidden><p class="eyebrow">Capitolo III · Domanda fondamentale</p><h1 id="food-title" tabindex="-1">Cosa si <em>mangia?</em></h1><p class="intro">Scegli le provviste per questa avventura.</p><fieldset id="preferences"><legend class="sr-only">Preferenza culinaria</legend><div class="food-grid"><label class="food"><input type="radio" name="preference" value="Pizza" required aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="m8 13 16 29 16-29Q24 1 8 13Zm3 5q13-10 26 0"/><circle cx="23" cy="22" r="3"/><circle cx="27" cy="31" r="2"/></svg><span>Pizza</span><small>UN GRANDE CLASSICO</small></span></label><label class="food"><input type="radio" name="preference" value="Sushi"  aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="24" cy="16" rx="16" ry="8"/><path d="M8 16v17q16 14 32 0V16M18 23v17m12-17v17"/><ellipse cx="24" cy="16" rx="6" ry="3"/></svg><span>Sushi</span><small>ROTTA VERSO EST</small></span></label><label class="food"><input type="radio" name="preference" value="Carne"  aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12q12-10 23 0t2 24q-14 12-25-1T10 12Z"/><path d="M15 16q9-6 16 2t-1 13q-10 6-15-3T15 16Z"/><circle cx="25" cy="23" r="3"/></svg><span>Carne</span><small>PER GRANDI APPETITI</small></span></label><label class="food"><input type="radio" name="preference" value="Italiano"  aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 28h36q-4 13-18 13T6 28Zm7-5q-5-8 1-11t4 11m5 0q-5-14 2-16t4 16m6 0q-3-10 3-13M14 45h20"/></svg><span>Italiano</span><small>TERRA CONOSCIUTA</small></span></label><label class="food"><input type="radio" name="preference" value="Sorprendimi"  aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="30" height="30" rx="5" transform="rotate(10 24 24)"/><circle cx="17" cy="16" r="1.5"/><circle cx="24" cy="24" r="1.5"/><circle cx="31" cy="32" r="1.5"/></svg><span>Sorprendimi</span><small>DESTINO IGNOTO</small></span></label><label class="food"><input type="radio" name="preference" value="Basta che si mangi"  aria-describedby="form-error"><span><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="11"/><circle cx="24" cy="24" r="7"/><path d="M5 9v11q0 5 4 5V39M9 9v16M13 9v11q0 5-4 5M41 9v30m0-30q-7 7-5 16h5"/></svg><span>Basta che si mangi</span><small>PRIORITÀ CHIARE</small></span></label></div><p id="food-reaction" class="food-reaction" role="status"></p></fieldset><button id="food-next" type="button" class="primary">AVANTI <span aria-hidden="true">→</span></button><button type="button" class="text-button" data-back="date">← Torna al giorno</button></div>
+<div class="form-chapter" id="notes-chapter" hidden><p class="eyebrow">Capitolo IV · Un ultimo messaggio</p><h1 id="notes-title" tabindex="-1">Qualcos’<em>altro?</em></h1><p class="intro" id="notes-hint">Richieste, preferenze, minacce sul ristorante...</p><div class="letter-paper"><div class="letter-heading"><svg class="icon" viewBox="0 0 48 48" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 41 35 10M17 32q-4-18 11-23l14-4-6 16q-5 15-19 11ZM16 24h8m-1-9h8M5 43h29"/></svg><label for="notes">Una nota per Filippo <small>Facoltativo</small></label></div><textarea id="notes" name="notes" rows="5" maxlength="2000" placeholder="Scrivi pure qui..." aria-describedby="notes-hint"></textarea><span class="paper-caption">LE GRANDI IMPRESE INIZIANO CON DUE RIGHE.</span></div><div id="send-error" class="error-panel" role="alert" hidden><strong>Qualcosa è andato storto.</strong><p id="send-detail"></p></div><button id="submit" class="primary" type="submit">MANDA LA PROPOSTA <span aria-hidden="true">→</span></button><button type="button" class="text-button" data-back="food">← Torna al cibo</button></div>
+<p id="form-error" class="error" role="alert"></p></form></section>
+<section id="success" class="screen centered" hidden aria-labelledby="success-title"><p class="eyebrow">Quest completata</p><div class="toast" aria-hidden="true"><span class="toast-glass glass-left"></span><span class="toast-glass glass-right"></span><i>✧</i></div><h1 id="success-title" tabindex="-1">È <em>fatta.</em></h1><p class="intro">Ho ricevuto la tua proposta.</p><div id="summary" class="summary" hidden><span class="eyebrow">Una serata ci aspetta</span><p id="summary-date"></p><p id="summary-time"></p><p class="summary-food"><span id="summary-food-icon" aria-hidden="true"></span> <span id="summary-food"></span></p><span class="receipt-flower" aria-hidden="true">✧</span></div><p class="closing">Adesso tocca a me<br>organizzare il resto.</p><p class="aside">Pressione assolutamente inesistente.</p></section>
+<section id="cancelled" class="screen centered" hidden aria-labelledby="cancelled-title"><p class="eyebrow">Epilogo alternativo</p><div class="ornament" aria-hidden="true"><span>✧</span></div><h1 id="cancelled-title" tabindex="-1">Ah.</h1><div class="refusal-after" aria-live="polite"><p id="cancelled-aside" class="intro" hidden>Beh, questo sito poteva tranquillamente essere un messaggio.</p></div><p class="chapter-foot">FINE DELL’AVVENTURA. PER ORA.</p></section>
+<noscript><p class="error-panel">Per iniziare l’avventura, abilita JavaScript nel browser.</p></noscript></main><footer><span>Una piccola quest. Una buona cena.</span><span aria-hidden="true">✧</span></footer></div><div id="confetti" aria-hidden="true"></div></body></html>

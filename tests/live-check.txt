@@ -1,0 +1,6 @@
+2026-10-02 — Real Formspree check
+Endpoint: https://formspree.io/f/mbglenaa
+One browser submit attempted with an explicit TEST TECNICO note and the exact five-field payload.
+No positive response received. Form remained on notes with RIPROVA and preserved values.
+A subsequent HEAD-only diagnostic failed with net::ERR_NETWORK_ACCESS_DENIED.
+External acceptance and inbox delivery remain unverified. No repeat POST attempted.

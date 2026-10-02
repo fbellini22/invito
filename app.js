@@ -1,7 +1,7 @@
 "use strict";
 
 // Inserisci esclusivamente l'URL pubblico del form. Nessuna chiave privata.
-const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
+const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
 
 (() => {
   const $ = (id) => document.getElementById(id);
@@ -15,15 +15,16 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
     missionId = `DIN-${Math.floor(1000 + Math.random() * 9000)}`;
     storage.set("dinner-mission", missionId);
   }
-  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0 };
+  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "date" };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 80) : ms));
 
   function show(screen) {
     document.querySelectorAll(".screen").forEach((element) => { element.hidden = element.id !== screen; });
     state.screen = screen;
+    document.body.dataset.scene = screen === "configuration" ? state.chapter : screen;
     document.querySelector(".app").classList.toggle("declined", screen === "cancelled");
     window.scrollTo({ top: 0, behavior: "instant" });
-    $(screen).querySelector("h1").focus({ preventScroll: true });
+    $(screen).querySelector(screen === "configuration" ? ".form-chapter:not([hidden]) h1" : "h1").focus({ preventScroll: true });
   }
 
   $("start").addEventListener("click", async () => {
@@ -46,7 +47,7 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
   $("refuse").addEventListener("click", () => {
     if (state.screen !== "briefing" || state.busy || performance.now() - lastRefusal < 300) return;
     lastRefusal = performance.now();
-    const messages = ["Ah.", "Questa non era prevista.", "Posso offrirti la possibilità di ripensarci?", "Ok ok, ho capito 😂"];
+    const messages = ["Ah.", "Questa non era prevista.", "Posso offrirti la possibilità di ripensarci?", "Ok ok, ho capito."];
     state.refusals = Math.min(state.refusals + 1, 4);
     $("refuse-message").textContent = messages[state.refusals - 1];
     $("refuse").style.left = state.refusals % 2 ? "calc(50% - 90px)" : "calc(50% - 30px)";
@@ -64,7 +65,7 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
       const particle = document.createElement("i");
       particle.className = "confetto";
       particle.style.left = `${8 + Math.random() * 84}%`;
-      particle.style.background = ["#792f3c", "#8a9265", "#c49b56"][index % 3];
+      particle.style.background = ["#c49b56", "#e1bc7c", "#ac8957"][index % 3];
       particle.style.animationDelay = `${Math.random() * .4}s`;
       $("confetti").append(particle);
     }
@@ -106,9 +107,18 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
     $("form-error").textContent = "";
   });
 
-  form.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    if (state.submitting || state.sent || state.screen !== "configuration") return;
+  function showChapter(chapter, focus = true) {
+    state.chapter = chapter;
+    document.querySelectorAll(".form-chapter").forEach((element) => { element.hidden = element.id !== chapter + "-chapter"; });
+    document.body.dataset.scene = chapter;
+    $("form-error").textContent = "";
+    if (focus) {
+      window.scrollTo({ top: 0, behavior: "instant" });
+      $(chapter + "-chapter").querySelector("h1").focus({ preventScroll: true });
+    }
+  }
+
+  function validate(includeFood = true) {
     updateMinimum();
     const date = $("date");
     const time = $("time");
@@ -121,12 +131,42 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
     } else if (!time.value || !time.validity.valid) {
       invalid = time;
       message = "A che ora ci vediamo? Scegli un orario.";
-    } else if (!preference) {
+    } else if (includeFood && !preference) {
       invalid = form.querySelector('input[name="preference"]');
       message = "Scegli cosa ti andrebbe di mangiare.";
     }
-    $("form-error").textContent = message;
-    if (invalid) { invalid.setAttribute("aria-invalid", "true"); invalid.focus(); return; }
+    if (invalid) {
+      showChapter(invalid === date || invalid === time ? "date" : "food", false);
+      $("form-error").textContent = message;
+      invalid.setAttribute("aria-invalid", "true");
+      invalid.focus();
+      return false;
+    }
+    $("form-error").textContent = "";
+    return true;
+  }
+
+  $("date-next").addEventListener("click", () => {
+    if (state.screen === "configuration" && !state.submitting && state.chapter === "date" && validate(false)) showChapter("food");
+  });
+  $("food-next").addEventListener("click", () => {
+    if (state.screen === "configuration" && !state.submitting && state.chapter === "food" && validate()) showChapter("notes");
+  });
+  document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
+    if (state.screen === "configuration" && !state.submitting) showChapter(button.dataset.back);
+  }));
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (state.submitting || state.sent || state.screen !== "configuration") return;
+    if (state.chapter !== "notes") {
+      if (validate(state.chapter === "food")) showChapter(state.chapter === "date" ? "food" : "notes");
+      return;
+    }
+    if (!validate()) return;
+    const date = $("date");
+    const time = $("time");
+    const preference = form.querySelector('input[name="preference"]:checked');
     state.submitting = true;
     $("submit").disabled = true;
     $("submit").textContent = "Un secondo...";
@@ -139,7 +179,7 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
       "Preferenza culinaria": preference.value,
       "Note": $("notes").value.trim() || "Nessuna comunicazione aggiuntiva"
     };
-    const controls = [...form.querySelectorAll("input, textarea")];
+    const controls = [...form.querySelectorAll("input, textarea, button")];
     controls.forEach((control) => { control.disabled = true; });
     const controller = new AbortController();
     let timeout;
@@ -151,13 +191,12 @@ const FORM_ENDPOINT = "https://formsubmit.co/ajax/fbellini22@gmail.com";
       });
       if (!response.ok) throw new Error("service");
       const confirmation = await response.json();
-      // FormSubmit may return success as a string; "false" is not a confirmation.
-      if (!confirmation || (confirmation.success !== true && confirmation.success !== "true")) throw new Error("service");
+      if (!confirmation || confirmation.ok !== true) throw new Error("service");
       state.sent = true;
       storage.set("dinner-sent", missionId);
     } catch {
       $("send-error").hidden = false;
-      $("send-detail").textContent = "Le tue scelte sono ancora qui. Non è stato possibile confermare la ricezione. Riprova tra poco.";
+      $("send-detail").textContent = "Non è stato possibile confermare l’invio. Per fortuna le tue scelte sono ancora qui.";
       $("submit").textContent = "RIPROVA";
       $("submit").disabled = false;
       controls.forEach((control) => { control.disabled = false; });
