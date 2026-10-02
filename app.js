@@ -15,7 +15,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     missionId = `DIN-${Math.floor(1000 + Math.random() * 9000)}`;
     storage.set("dinner-mission", missionId);
   }
-  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "food", quest: { food: "", date: "", plan: "", notes: "" }, travel: { timer: null, target: null } };
+  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "food", quest: { food: "", date: "", planConfidence: "", notes: "" }, travel: { timer: null, target: null } };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 80) : ms));
 
   function show(screen) {
@@ -73,7 +73,11 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
   }
   const form = $("mission-form");
   const stops = ["start", "food", "date", "plan", "arrival"];
-  const plans = ["Serata tranquilla", "Cena + qualcosa dopo", "Sorprendimi"];
+  const confidenceReactions = {
+    "Molto": "L’oste sembra poco convinto.",
+    "Il giusto": "L’oste annuisce. Più o meno.",
+    "Quale piano?": "L’oste decide di non fare altre domande."
+  };
   const routes = {
     "Pizza": ["La via della pizza è stata scelta.", "Difficile contestare questa decisione.", "La Via della Pizza"],
     "Aperitivo": ["LA VIA DELL’APERITIVO È STATA SCELTA.", "Una quest che inizia bene.", "La Via dell’Aperitivo"],
@@ -87,7 +91,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
   }
   function validDate() { return !!state.quest.date && $("date").validity.valid && state.quest.date >= today(); }
-  function validPlan() { return plans.includes(state.quest.plan); }
+  function validPlan() { return Object.prototype.hasOwnProperty.call(confidenceReactions, state.quest.planConfidence); }
   function formatDate(value, year = false) {
     const [y, m, d] = value.split("-").map(Number);
     return new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", ...(year ? { year: "numeric" } : {}) }).format(new Date(y, m - 1, d, 12));
@@ -96,6 +100,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     const locked = state.busy || state.submitting;
     $("food-next").disabled = locked || !routes[state.quest.food];
     $("date-next").disabled = locked || !validDate();
+    $("plan-next").disabled = locked || !validPlan();
     $("date-reaction").hidden = !validDate();
     if (validDate()) $("chosen-date").textContent = formatDate(state.quest.date);
   }
@@ -121,10 +126,12 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       $("route-symbol").replaceChildren(target.nextElementSibling.querySelector("svg").cloneNode(true));
       $("route-name").textContent = route[2];
       $("journey-stage").dataset.route = target.value;
-    } else if (target.name === "plan" && target.checked) {
-      state.quest.plan = target.value;
-      form.querySelectorAll('[name="plan"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
-      if (state.chapter === "plan" && validate("plan")) travelTo("arrival");
+    } else if (target.name === "planConfidence" && target.checked) {
+      state.quest.planConfidence = target.value;
+      form.querySelectorAll('[name="planConfidence"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
+      $("confidence-reaction").textContent = confidenceReactions[target.value];
+      $("confidence-reaction").hidden = false;
+      $("plan-next").hidden = false;
     } else if (["date", "notes"].includes(target.name)) {
       state.quest[target.name] = target.value;
     }
@@ -132,7 +139,6 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
   }
   form.addEventListener("input", recordChoice);
   form.addEventListener("change", recordChoice);
-  form.querySelectorAll('[name="plan"]').forEach((radio) => radio.addEventListener("click", recordChoice));
 
   function showChapter(chapter, focus = true) {
     state.chapter = chapter;
@@ -152,7 +158,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     if (chapter === "arrival") {
       $("arrival-food").textContent = routes[state.quest.food][2];
       $("arrival-date").textContent = formatDate(state.quest.date, true);
-      $("arrival-plan").textContent = state.quest.plan;
+      $("arrival-plan").textContent = state.quest.planConfidence;
     }
     updateChoices();
     if (focus) {
@@ -170,8 +176,8 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       field = $("date"); chapter = "date";
       message = state.quest.date && state.quest.date < today() ? "Scegli oggi o una data futura." : "Scegli il giorno che preferisci.";
     } else if (["plan", "arrival"].includes(through) && !validPlan()) {
-      field = form.querySelector('[name="plan"]'); chapter = "plan";
-      message = "Scegli il tipo di serata.";
+      field = form.querySelector('[name="planConfidence"]'); chapter = "plan";
+      message = "Scegli quanto ci fidiamo del piano.";
     }
     if (!field) return true;
     showChapter(chapter, false);
@@ -214,7 +220,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     const next = { food: "date", date: "plan", plan: "arrival" }[state.chapter];
     if (next && validate(state.chapter)) travelTo(next);
   }
-  ["food-next", "date-next"].forEach((id) => $(id).addEventListener("click", () => {
+  ["food-next", "date-next", "plan-next"].forEach((id) => $(id).addEventListener("click", () => {
     if (state.chapter === id.split("-")[0]) advance();
   }));
   document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
@@ -232,18 +238,21 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     if (!validate()) return;
     state.submitting = true;
     $("submit").disabled = true;
-    $("submit").textContent = "Un secondo...";
+    $("submit").textContent = "INVIA IL MESSAGGERO";
     $("send-error").hidden = true;
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     const payload = {
       "Mission ID": missionId,
       "Data proposta": state.quest.date.split("-").reverse().join("/"),
       "Preferenza": state.quest.food,
-      "Tipo di serata": state.quest.plan,
+      "Fiducia nel piano": state.quest.planConfidence,
       "Note": state.quest.notes.trim() || "Nessuna comunicazione aggiuntiva"
     };
     const controls = [...form.querySelectorAll("input, textarea, button")];
     controls.forEach((control) => { control.disabled = true; });
+    $("messenger").classList.remove("delivered");
+    $("messenger-delivered").hidden = true;
+    show("messenger");
     const controller = new AbortController();
     let timeout;
     try {
@@ -258,9 +267,10 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       state.sent = true;
       storage.set("dinner-sent", missionId);
     } catch {
+      show("configuration");
       $("send-error").hidden = false;
-      $("send-detail").textContent = "La proposta non è partita. Le tue scelte sono ancora al sicuro.";
-      $("submit").textContent = "RIPROVA";
+      $("send-detail").textContent = "A quanto pare qualcosa è andato storto lungo il tragitto. Le tue scelte sono ancora qui.";
+      $("submit").textContent = "RIMANDALO";
       $("submit").disabled = false;
       controls.forEach((control) => { control.disabled = false; });
       state.submitting = false;
@@ -269,9 +279,12 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     } finally { clearTimeout(timeout); }
     const [day, month, year] = payload["Data proposta"].split("/").map(Number);
     $("summary-date").textContent = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(year, month - 1, day, 12));
-    $("summary-plan").textContent = payload["Tipo di serata"];
+    $("summary-plan").textContent = payload["Fiducia nel piano"];
     $("summary-food").textContent = routes[payload["Preferenza"]][2];
     $("summary").hidden = false;
+    $("messenger").classList.add("delivered");
+    $("messenger-delivered").hidden = false;
+    if (!reducedMotion.matches) await wait(900);
     show("success");
     celebrate();
     state.submitting = false;
