@@ -1016,3 +1016,36 @@ body[data-scene=food] .world-art,body[data-scene=notes] .world-art {
 .quest-reward { border-top: 1px solid var(--line); margin-top: 26px; padding-top: 23px; }
 .quest-reward p { font: italic 18px/1.6 var(--serif); margin: 0; }
 @media (prefers-reduced-motion: reduce) { #reveal-objective, #reveal-punchline { animation: none; } }
+
+/* Optional microgame, using the same original world and warm parchment palette. */
+.trail-stage { position: relative; width: 100%; aspect-ratio: 600 / 460; border: 1px solid var(--line); background: #25372f url('./assets/tavern-trail.svg') center / cover no-repeat; isolation: isolate; margin: 23px 0 0; border-radius: 2px; box-shadow: inset 0 0 30px #0c191b55; }
+.trail-destination { position: absolute; left: 60%; top: 6%; font-size: 7px; letter-spacing: 1.5px; color: #f1d7a7; }
+.trail-destination span { display: block; text-align: center; font-size: 18px; margin-top: 3px; }
+.trail-caption { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; font-size: 6px; letter-spacing: 1.3px; color: #d9c5a1; }
+.traveler { position: absolute; left: 18%; top: 80%; width: 32px; height: 47px; transform: translate(-50%, -100%); pointer-events: none; z-index: 1; }
+.traveler svg { display: block; width: 100%; height: 100%; }
+.journey-active .traveler { animation: walk-trail 18s linear forwards; }
+.journey-active .traveler svg { animation: walking .65s ease-in-out infinite; }
+.pickup-position { position: absolute; width: 58px; height: 58px; transform: translate(-50%, -50%); z-index: 2; }
+.pickup-provisions { left: 25%; top: 64%; }
+.pickup-funds { left: 49%; top: 42%; }
+.pickup-morale { left: 76%; top: 57%; }
+.pickup { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid #d7b978; border-radius: 50%; color: var(--gold); background: radial-gradient(circle, #67513a, #27312a); box-shadow: 0 0 0 5px #d6b07715, 0 3px 17px #0b171b88; touch-action: manipulation; animation: arrive .35s ease both; }
+.pickup .icon { width: 35px; height: 35px; }
+.pickup:active { background: #72543a; }
+.pickup-position.collected::after { content: '✧'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; color: #efd394; pointer-events: none; animation: collect-spark .7s ease-out both; }
+.tap-hint { margin: 12px 0 17px; color: var(--muted); font-size: 11px; text-align: center; }
+.journey-inventory { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; gap: 6px; padding: 16px 10px; margin: 0; border: 1px solid #b59a6d; color: #413628; background: linear-gradient(125deg, #e1d2b1, #c9b790); }
+.journey-inventory li { text-align: center; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
+.journey-inventory li>span:last-child { display: block; margin-top: 8px; font-size: 17px; line-height: 1; color: #5a5334; }
+#journey .intro { margin-bottom: 15px; }
+#journey .food-reaction { text-align: center; font-size: 14px; min-height: 44px; margin: 14px 0 0; }
+#skip-journey { margin-top: 1px; font-size: 10px; letter-spacing: 1.2px; }
+.trail-arrived { margin-bottom: 26px; }
+.trail-arrived .traveler { left: 75%; top: 40%; }
+.tavern-glow { position: absolute; left: 59%; top: 16%; width: 35%; height: 35%; pointer-events: none; background: radial-gradient(ellipse, #f3c87b66, transparent 70%); animation: arrive .8s ease both; }
+@keyframes walk-trail { 0% { left: 18%; top: 80%; } 25% { left: 30%; top: 71%; } 45% { left: 50%; top: 65%; } 65% { left: 48%; top: 56%; } 85% { left: 59%; top: 43%; } 100% { left: 75%; top: 40%; } }
+@keyframes walking { 50% { transform: translateY(-2px) rotate(2deg); } }
+@keyframes collect-spark { from { opacity: 1; transform: scale(.6); text-shadow: -10px 8px #d9ad6c, 10px 7px #d9ad6c; } to { opacity: 0; transform: translateY(-30px) scale(1.4); text-shadow: -20px 8px #d9ad6c00, 20px 7px #d9ad6c00; } }
+@media (max-width: 899px) { body[data-scene=journey] main, body[data-scene=arrival] main { margin-top: 50px; } }
+@media (prefers-reduced-motion: reduce) { .journey-active .traveler, .journey-active .traveler svg, .pickup, .tavern-glow { animation: none; } .pickup-position.collected::after { display: none; } }

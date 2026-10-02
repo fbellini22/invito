@@ -15,10 +15,11 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     missionId = `DIN-${Math.floor(1000 + Math.random() * 9000)}`;
     storage.set("dinner-mission", missionId);
   }
-  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "date" };
+  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "date", journey: { active: false, timer: null, started: 0, collected: new Set() } };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 80) : ms));
 
   function show(screen) {
+    if (state.screen === "journey" && screen !== "journey") stopJourney();
     document.querySelectorAll(".screen").forEach((element) => { element.hidden = element.id !== screen; });
     state.screen = screen;
     document.body.dataset.scene = screen === "configuration" ? state.chapter : screen;
@@ -70,7 +71,75 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     }
     setTimeout(() => $("confetti").replaceChildren(), 2400);
   }
-  $("configure").addEventListener("click", () => { if (state.screen === "journal" && !state.busy) show("configuration"); });
+  const JOURNEY_DURATION = 18000;
+  const journeyItems = [
+    { id: "provisions", at: 0, reaction: "Provviste recuperate." },
+    { id: "funds", at: 3500, reaction: "Il conto sembra leggermente meno minaccioso." },
+    { id: "morale", at: 7000, reaction: "Morale inspiegabilmente alto." }
+  ];
+
+  function clearJourneyTimer() {
+    clearTimeout(state.journey.timer);
+    state.journey.timer = null;
+  }
+  function stopJourney() {
+    clearJourneyTimer();
+    state.journey.active = false;
+    $("journey-stage").classList.remove("journey-active");
+  }
+  function finishJourney() {
+    if (state.screen !== "journey" || !state.journey.active) return;
+    $("arrival-inventory").textContent = state.journey.collected.size === 3 ? "INVENTARIO COMPLETO ✓" : "Abbastanza preparati.";
+    show("arrival");
+  }
+  function updateJourney() {
+    clearJourneyTimer();
+    if (state.screen !== "journey" || !state.journey.active) return;
+    const elapsed = performance.now() - state.journey.started;
+    if (elapsed >= JOURNEY_DURATION) { finishJourney(); return; }
+    if (document.hidden) return;
+    let next = JOURNEY_DURATION;
+    for (const item of journeyItems) {
+      if (reducedMotion.matches || elapsed >= item.at) {
+        $("pickup-" + item.id).hidden = state.journey.collected.has(item.id);
+      } else {
+        next = Math.min(next, item.at);
+      }
+    }
+    state.journey.timer = setTimeout(updateJourney, Math.max(0, next - elapsed));
+  }
+  $("configure").addEventListener("click", () => {
+    if (state.screen !== "journal" || state.busy) return;
+    state.journey.active = true;
+    state.journey.started = performance.now();
+    show("journey");
+    $("journey-stage").classList.add("journey-active");
+    updateJourney();
+  });
+  document.querySelectorAll("[data-item]").forEach((button) => button.addEventListener("click", () => {
+    const id = button.dataset.item;
+    if (state.screen !== "journey" || !state.journey.active || button.hidden || state.journey.collected.has(id)) return;
+    state.journey.collected.add(id);
+    button.hidden = true;
+    $("pickup-slot-" + id).classList.add("collected");
+    $("inventory-" + id).textContent = "✓";
+    $("inventory-" + id).setAttribute("aria-label", "Raccolto");
+    $("journey-reaction").textContent = journeyItems.find((item) => item.id === id).reaction;
+    // Keep keyboard focus on an available control after removing a collected item.
+    if (document.activeElement === button) {
+      const next = document.querySelector(".pickup:not([hidden])") || $("skip-journey");
+      next.focus({ preventScroll: true });
+    }
+  }));
+  $("skip-journey").addEventListener("click", finishJourney);
+  $("enter-tavern").addEventListener("click", () => {
+    if (state.screen === "arrival" && !state.busy) show("configuration");
+  });
+  // One deadline-based timer; background tabs and bfcache never create duplicate runs.
+  document.addEventListener("visibilitychange", updateJourney);
+  window.addEventListener("pagehide", clearJourneyTimer);
+  window.addEventListener("pageshow", updateJourney);
+  reducedMotion.addEventListener("change", updateJourney);
 
   function today() {
     const date = new Date();

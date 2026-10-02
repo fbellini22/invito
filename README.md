@@ -14,7 +14,7 @@ Apri http://127.0.0.1:8000. Il sito può essere esplorato anche aprendo index.ht
 
 ## Capitoli e logica
 
-Nuova quest → ACCETTA → rivelazione «Organizzare una cena» → diario → data/ora → cibo → messaggio → proposta ricevuta. La prima schermata, il titolo della scheda, intestazione e footer non anticipano la cena. IGNORA mantiene quattro tentativi; IGNORA DAVVERO conclude il percorso senza inviare nulla. La rivelazione appare in due tempi (650 ms + 850 ms), senza attese con movimento ridotto.
+Nuova quest → ACCETTA → rivelazione «Organizzare una cena» → diario → viaggio verso la taverna → data/ora → cibo → messaggio → proposta ricevuta. La prima schermata, il titolo della scheda, intestazione e footer non anticipano la cena. IGNORA mantiene quattro tentativi; IGNORA DAVVERO conclude il percorso senza inviare nulla. La rivelazione appare in due tempi (650 ms + 850 ms), senza attese con movimento ridotto.
 
 Un unico form contiene tre capitoli. Avanti valida prima data/ora, poi la preferenza. I pulsanti indietro conservano tutti i valori. Prima del POST vengono ricontrollati anche i campi nei capitoli precedenti; un errore riapre il capitolo corretto e porta il focus al campo. Invio da tastiera nei primi capitoli avanza senza spedire la proposta.
 
@@ -54,3 +54,11 @@ Browser: Chromium e WebKit. Viewport: 320×568, iPhone SE 375×667, standard 390
 WebKit su Windows non è un iPhone fisico. Picker data/ora, tastiera iOS, Dynamic Island, safe area e barra Safari devono essere verificati sul dispositivo reale. Sono conservati input nativi, caratteri di almeno 16px, target di almeno 44px, 100dvh con fallback, safe-area-inset e scorrimento senza pulsanti fissi. La viewport ridotta verifica lo spazio per il form, non emula la tastiera iOS.
 
 Il tentativo di test reale del redesign è stato bloccato dalla rete dell’ambiente (ERR_NETWORK_ACCESS_DENIED). Non è stata ricevuta una conferma dal servizio; la schermata è rimasta sul messaggio con RIPROVA. Attivazione, accettazione reale e recapito vanno verificati dal browser locale con accesso alla rete.
+
+## Mini-gioco: il viaggio verso la taverna
+
+INIZIA nel diario apre un microgame di 18 secondi. L’avventuriero cammina automaticamente; provviste, fondi e morale compaiono a 0, 3,5 e 7 secondi e restano disponibili al tap. Tre pulsanti da 58 px, nessun drag, nessun punteggio minimo. Anche senza raccogliere nulla si arriva alla taverna. SALTA IL VIAGGIO conclude subito e ENTRA porta al form originale.
+
+Con movimento ridotto la scena è statica e tutti gli oggetti sono disponibili subito, conservando l’arrivo automatico. Il timer unico usa una scadenza di 18 secondi, viene cancellato all’uscita e durante il background, e viene riconciliato al ritorno alla scheda. Non vengono registrati inventario o stato del gioco in sessionStorage, né inviati nel payload.
+
+Nuovo asset originale: assets/tavern-trail.svg. Personaggio e icone sono SVG inline; camminata, bagliore della taverna e scintille sono CSS. Nessuna libreria o canvas.
