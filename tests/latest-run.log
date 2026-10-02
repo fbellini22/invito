@@ -20,4 +20,3 @@ chromium: PASS reduced motion; no automatic advance before/after choices; 1.2s w
 chromium: PASS HTTP/invalid JSON/null/false/string/missing/timeout, identical state on every retry
 chromium: PASS four refusals and real decline, no POST
 chromium: PASS unavailable storage fallback
-Supplementary WebKit: PASS all three evening plans, direct arrival, exact five-field payload.

@@ -15,11 +15,11 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     missionId = `DIN-${Math.floor(1000 + Math.random() * 9000)}`;
     storage.set("dinner-mission", missionId);
   }
-  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "date", journey: { active: false, timer: null, started: 0, collected: new Set() } };
+  const state = { screen: "access", busy: false, submitting: false, sent: storage.get("dinner-sent") === missionId, refusals: 0, chapter: "food", quest: { food: "", date: "", plan: "", notes: "" }, travel: { timer: null, target: null } };
   const wait = (ms) => new Promise((resolve) => setTimeout(resolve, reducedMotion.matches ? Math.min(ms, 80) : ms));
 
   function show(screen) {
-    if (state.screen === "journey" && screen !== "journey") stopJourney();
+    if (state.screen === "configuration" && screen !== "configuration") cancelWalk();
     document.querySelectorAll(".screen").forEach((element) => { element.hidden = element.id !== screen; });
     state.screen = screen;
     document.body.dataset.scene = screen === "configuration" ? state.chapter : screen;
@@ -71,165 +71,165 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     }
     setTimeout(() => $("confetti").replaceChildren(), 2400);
   }
-  const JOURNEY_DURATION = 18000;
-  const journeyItems = [
-    { id: "provisions", at: 0, reaction: "Provviste recuperate." },
-    { id: "funds", at: 3500, reaction: "Il conto sembra leggermente meno minaccioso." },
-    { id: "morale", at: 7000, reaction: "Morale inspiegabilmente alto." }
-  ];
-
-  function clearJourneyTimer() {
-    clearTimeout(state.journey.timer);
-    state.journey.timer = null;
-  }
-  function stopJourney() {
-    clearJourneyTimer();
-    state.journey.active = false;
-    $("journey-stage").classList.remove("journey-active");
-  }
-  function finishJourney() {
-    if (state.screen !== "journey" || !state.journey.active) return;
-    $("arrival-inventory").textContent = state.journey.collected.size === 3 ? "INVENTARIO COMPLETO ✓" : "Abbastanza preparati.";
-    show("arrival");
-  }
-  function updateJourney() {
-    clearJourneyTimer();
-    if (state.screen !== "journey" || !state.journey.active) return;
-    const elapsed = performance.now() - state.journey.started;
-    if (elapsed >= JOURNEY_DURATION) { finishJourney(); return; }
-    if (document.hidden) return;
-    let next = JOURNEY_DURATION;
-    for (const item of journeyItems) {
-      if (reducedMotion.matches || elapsed >= item.at) {
-        $("pickup-" + item.id).hidden = state.journey.collected.has(item.id);
-      } else {
-        next = Math.min(next, item.at);
-      }
-    }
-    state.journey.timer = setTimeout(updateJourney, Math.max(0, next - elapsed));
-  }
-  $("configure").addEventListener("click", () => {
-    if (state.screen !== "journal" || state.busy) return;
-    state.journey.active = true;
-    state.journey.started = performance.now();
-    show("journey");
-    $("journey-stage").classList.add("journey-active");
-    updateJourney();
-  });
-  document.querySelectorAll("[data-item]").forEach((button) => button.addEventListener("click", () => {
-    const id = button.dataset.item;
-    if (state.screen !== "journey" || !state.journey.active || button.hidden || state.journey.collected.has(id)) return;
-    state.journey.collected.add(id);
-    button.hidden = true;
-    $("pickup-slot-" + id).classList.add("collected");
-    $("inventory-" + id).textContent = "✓";
-    $("inventory-" + id).setAttribute("aria-label", "Raccolto");
-    $("journey-reaction").textContent = journeyItems.find((item) => item.id === id).reaction;
-    // Keep keyboard focus on an available control after removing a collected item.
-    if (document.activeElement === button) {
-      const next = document.querySelector(".pickup:not([hidden])") || $("skip-journey");
-      next.focus({ preventScroll: true });
-    }
-  }));
-  $("skip-journey").addEventListener("click", finishJourney);
-  $("enter-tavern").addEventListener("click", () => {
-    if (state.screen === "arrival" && !state.busy) show("configuration");
-  });
-  // One deadline-based timer; background tabs and bfcache never create duplicate runs.
-  document.addEventListener("visibilitychange", updateJourney);
-  window.addEventListener("pagehide", clearJourneyTimer);
-  window.addEventListener("pageshow", updateJourney);
-  reducedMotion.addEventListener("change", updateJourney);
-
+  const form = $("mission-form");
+  const stops = ["start", "food", "date", "plan", "arrival"];
+  const plans = ["Serata tranquilla", "Cena + qualcosa dopo", "Sorprendimi"];
+  const routes = {
+    "Pizza": ["La via della pizza è stata scelta.", "Difficile contestare questa decisione.", "La Via della Pizza"],
+    "Aperitivo": ["LA VIA DELL’APERITIVO È STATA SCELTA.", "Una quest che inizia bene.", "La Via dell’Aperitivo"],
+    "Carne": ["La locanda del cacciatore è stata scelta.", "Messaggio ricevuto.", "La Locanda del Cacciatore"],
+    "Italiano": ["La vecchia osteria è stata scelta.", "Si gioca in casa.", "La Vecchia Osteria"],
+    "Sorprendimi": ["Il sentiero sconosciuto è stato scelto.", "Questa è molta fiducia.", "Il Sentiero Sconosciuto"],
+    "Basta che si mangi": ["Qualsiasi strada è stata scelta.", "Finalmente dei requisiti chiari.", "Qualsiasi Strada"]
+  };
   function today() {
     const date = new Date();
-    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+    return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
   }
-  function updateMinimum() { $("date").min = today(); }
+  function validDate() { return !!state.quest.date && $("date").validity.valid && state.quest.date >= today(); }
+  function validPlan() { return plans.includes(state.quest.plan); }
+  function formatDate(value, year = false) {
+    const [y, m, d] = value.split("-").map(Number);
+    return new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", ...(year ? { year: "numeric" } : {}) }).format(new Date(y, m - 1, d, 12));
+  }
+  function updateChoices() {
+    const locked = state.busy || state.submitting;
+    $("food-next").disabled = locked || !routes[state.quest.food];
+    $("date-next").disabled = locked || !validDate();
+    $("date-reaction").hidden = !validDate();
+    if (validDate()) $("chosen-date").textContent = formatDate(state.quest.date);
+  }
+  function updateMinimum() { $("date").min = today(); updateChoices(); }
   updateMinimum();
   window.addEventListener("focus", updateMinimum);
   document.addEventListener("visibilitychange", () => { if (!document.hidden) updateMinimum(); });
   $("date").addEventListener("focus", updateMinimum);
-  const form = $("mission-form");
-  const foodReactions = {
-    "Pizza": "Difficile sbagliare.",
-    "Sushi": "Scelta rispettabile.",
-    "Carne": "Messaggio ricevuto.",
-    "Italiano": "Si gioca in casa.",
-    "Sorprendimi": "Questa è molta fiducia.",
-    "Basta che si mangi": "La risposta più concreta finora."
-  };
-  form.addEventListener("change", (event) => {
-    if (event.target.name === "preference") $("food-reaction").textContent = foodReactions[event.target.value];
-  });
-  form.addEventListener("input", (event) => {
-    event.target.removeAttribute("aria-invalid");
-    if (event.target.name === "preference") {
-      form.querySelectorAll('[name="preference"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
-    }
+
+  function recordChoice(event) {
+    const target = event.target;
+    if (state.submitting || state.busy) return;
+    target.removeAttribute("aria-invalid");
     $("form-error").textContent = "";
-  });
+    if (target.name === "preference" && target.checked) {
+      state.quest.food = target.value;
+      form.querySelectorAll('[name="preference"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
+      const route = routes[target.value];
+      $("chosen-route").textContent = route[0];
+      $("food-reaction").textContent = route[1];
+      $("route-reaction").hidden = false;
+      $("route-marker").hidden = false;
+      $("route-symbol").replaceChildren(target.nextElementSibling.querySelector("svg").cloneNode(true));
+      $("route-name").textContent = route[2];
+      $("journey-stage").dataset.route = target.value;
+    } else if (target.name === "plan" && target.checked) {
+      state.quest.plan = target.value;
+      form.querySelectorAll('[name="plan"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
+      if (state.chapter === "plan" && validate("plan")) travelTo("arrival");
+    } else if (["date", "notes"].includes(target.name)) {
+      state.quest[target.name] = target.value;
+    }
+    updateChoices();
+  }
+  form.addEventListener("input", recordChoice);
+  form.addEventListener("change", recordChoice);
+  form.querySelectorAll('[name="plan"]').forEach((radio) => radio.addEventListener("click", recordChoice));
 
   function showChapter(chapter, focus = true) {
     state.chapter = chapter;
     document.querySelectorAll(".form-chapter").forEach((element) => { element.hidden = element.id !== chapter + "-chapter"; });
     document.body.dataset.scene = chapter;
     $("form-error").textContent = "";
+    if (chapter !== "travel") {
+      $("journey-stage").dataset.stop = chapter;
+      document.querySelectorAll(".quest-route [data-stop]").forEach((point, index) => {
+        const current = point.dataset.stop === chapter;
+        point.classList.toggle("reached", index <= stops.indexOf(chapter));
+        point.querySelector("span").textContent = index <= stops.indexOf(chapter) ? "●" : "○";
+        if (current) point.setAttribute("aria-current", "step"); else point.removeAttribute("aria-current");
+      });
+      $("journey-stage").querySelector(".tavern-glow").hidden = chapter !== "arrival";
+    }
+    if (chapter === "arrival") {
+      $("arrival-food").textContent = routes[state.quest.food][2];
+      $("arrival-date").textContent = formatDate(state.quest.date, true);
+      $("arrival-plan").textContent = state.quest.plan;
+    }
+    updateChoices();
     if (focus) {
       window.scrollTo({ top: 0, behavior: "instant" });
       $(chapter + "-chapter").querySelector("h1").focus({ preventScroll: true });
     }
   }
-
-  function validate(includeFood = true) {
+  function validate(through = "arrival") {
     updateMinimum();
-    const date = $("date");
-    const time = $("time");
-    const preference = form.querySelector('input[name="preference"]:checked');
-    let invalid = null;
-    let message = "";
-    if (!date.value || !date.validity.valid || date.value < today()) {
-      invalid = date;
-      message = date.value && date.value < today() ? "Scegli oggi o una data futura." : "Scegli il giorno che preferisci.";
-    } else if (!time.value || !time.validity.valid) {
-      invalid = time;
-      message = "A che ora ci vediamo? Scegli un orario.";
-    } else if (includeFood && !preference) {
-      invalid = form.querySelector('input[name="preference"]');
-      message = "Scegli cosa ti andrebbe di mangiare.";
+    let field, message, chapter;
+    if (!routes[state.quest.food]) {
+      field = form.querySelector('[name="preference"]'); chapter = "food";
+      message = "Scegli come inizia la serata.";
+    } else if (through !== "food" && !validDate()) {
+      field = $("date"); chapter = "date";
+      message = state.quest.date && state.quest.date < today() ? "Scegli oggi o una data futura." : "Scegli il giorno che preferisci.";
+    } else if (["plan", "arrival"].includes(through) && !validPlan()) {
+      field = form.querySelector('[name="plan"]'); chapter = "plan";
+      message = "Scegli il tipo di serata.";
     }
-    if (invalid) {
-      showChapter(invalid === date || invalid === time ? "date" : "food", false);
-      $("form-error").textContent = message;
-      invalid.setAttribute("aria-invalid", "true");
-      invalid.focus();
-      return false;
-    }
-    $("form-error").textContent = "";
-    return true;
+    if (!field) return true;
+    showChapter(chapter, false);
+    $("form-error").textContent = message;
+    field.setAttribute("aria-invalid", "true");
+    field.focus();
+    return false;
   }
-
-  $("date-next").addEventListener("click", () => {
-    if (state.screen === "configuration" && !state.submitting && state.chapter === "date" && validate(false)) showChapter("food");
+  function cancelWalk() {
+    clearTimeout(state.travel.timer);
+    state.travel.timer = null;
+    state.travel.target = null;
+    state.busy = false;
+    $("journey-stage").classList.remove("walking");
+  }
+  function finishWalk() {
+    if (!state.travel.target) return;
+    const target = state.travel.target;
+    cancelWalk();
+    if (target && state.screen === "configuration") showChapter(target);
+  }
+  function travelTo(chapter) {
+    if (state.busy || state.submitting) return;
+    state.travel.target = chapter;
+    state.busy = true;
+    showChapter("travel");
+    $("journey-stage").classList.add("walking");
+    $("journey-stage").dataset.stop = chapter;
+    if (reducedMotion.matches) { finishWalk(); return; }
+    // This timer ends only a short walk. No decision has an automatic deadline.
+    state.travel.timer = setTimeout(finishWalk, 1200);
+  }
+  $("configure").addEventListener("click", () => {
+    if (state.screen !== "journal" || state.busy) return;
+    show("configuration");
+    travelTo("food");
   });
-  $("food-next").addEventListener("click", () => {
-    if (state.screen === "configuration" && !state.submitting && state.chapter === "food" && validate()) showChapter("notes");
-  });
-  document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
-    if (state.screen === "configuration" && !state.submitting) showChapter(button.dataset.back);
+  function advance() {
+    if (state.screen !== "configuration" || state.busy || state.submitting) return;
+    const next = { food: "date", date: "plan", plan: "arrival" }[state.chapter];
+    if (next && validate(state.chapter)) travelTo(next);
+  }
+  ["food-next", "date-next"].forEach((id) => $(id).addEventListener("click", () => {
+    if (state.chapter === id.split("-")[0]) advance();
   }));
+  document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
+    if (state.screen === "configuration" && !state.busy && !state.submitting && stops.indexOf(button.dataset.back) < stops.indexOf(state.chapter)) showChapter(button.dataset.back);
+  }));
+  // Resolve only the in-between walk on backgrounding; the next choice still waits.
+  window.addEventListener("pagehide", finishWalk);
+  document.addEventListener("visibilitychange", () => { if (document.hidden && state.travel.target) finishWalk(); });
+  reducedMotion.addEventListener("change", () => { if (reducedMotion.matches && state.travel.target) finishWalk(); });
 
   form.addEventListener("submit", async (event) => {
     event.preventDefault();
-    if (state.submitting || state.sent || state.screen !== "configuration") return;
-    if (state.chapter !== "notes") {
-      if (validate(state.chapter === "food")) showChapter(state.chapter === "date" ? "food" : "notes");
-      return;
-    }
+    if (state.submitting || state.sent || state.busy || state.screen !== "configuration") return;
+    if (state.chapter !== "arrival") { advance(); return; }
     if (!validate()) return;
-    const date = $("date");
-    const time = $("time");
-    const preference = form.querySelector('input[name="preference"]:checked');
     state.submitting = true;
     $("submit").disabled = true;
     $("submit").textContent = "Un secondo...";
@@ -237,10 +237,10 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     if (document.activeElement instanceof HTMLElement) document.activeElement.blur();
     const payload = {
       "Mission ID": missionId,
-      "Data proposta": date.value.split("-").reverse().join("/"),
-      "Ora proposta": time.value,
-      "Preferenza culinaria": preference.value,
-      "Note": $("notes").value.trim() || "Nessuna comunicazione aggiuntiva"
+      "Data proposta": state.quest.date.split("-").reverse().join("/"),
+      "Preferenza": state.quest.food,
+      "Tipo di serata": state.quest.plan,
+      "Note": state.quest.notes.trim() || "Nessuna comunicazione aggiuntiva"
     };
     const controls = [...form.querySelectorAll("input, textarea, button")];
     controls.forEach((control) => { control.disabled = true; });
@@ -259,7 +259,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       storage.set("dinner-sent", missionId);
     } catch {
       $("send-error").hidden = false;
-      $("send-detail").textContent = "Non è stato possibile confermare l’invio. Per fortuna le tue scelte sono ancora qui.";
+      $("send-detail").textContent = "La proposta non è partita. Le tue scelte sono ancora al sicuro.";
       $("submit").textContent = "RIPROVA";
       $("submit").disabled = false;
       controls.forEach((control) => { control.disabled = false; });
@@ -269,9 +269,8 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     } finally { clearTimeout(timeout); }
     const [day, month, year] = payload["Data proposta"].split("/").map(Number);
     $("summary-date").textContent = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", year: "numeric" }).format(new Date(year, month - 1, day, 12));
-    $("summary-time").textContent = payload["Ora proposta"];
-    $("summary-food").textContent = payload["Preferenza culinaria"];
-    $("summary-food-icon").textContent = { "Pizza": "🍕", "Sushi": "🍣", "Carne": "🥩", "Italiano": "🍝", "Sorprendimi": "🎲", "Basta che si mangi": "🍽️" }[payload["Preferenza culinaria"]];
+    $("summary-plan").textContent = payload["Tipo di serata"];
+    $("summary-food").textContent = routes[payload["Preferenza"]][2];
     $("summary").hidden = false;
     show("success");
     celebrate();

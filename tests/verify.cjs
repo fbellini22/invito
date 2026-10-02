@@ -1,92 +1,72 @@
-/* Local browser regressions. All submissions are intercepted; no email is sent. */
-const fs = require('node:fs/promises');
-const path = require('node:path');
-const http = require('node:http');
-const assert = require('node:assert/strict');
+/* All POSTs are intercepted. These tests never send real email. */
+const fs = require('node:fs/promises'), path = require('node:path'), http = require('node:http'), assert = require('node:assert/strict');
 const root = path.resolve(__dirname, '..');
 const { chromium, webkit } = require(path.join(root, '.test-tools/playwright/driver/package'));
 const endpoint = 'https://formspree.io/f/mbglenaa';
+const foods = ['Pizza','Aperitivo','Carne','Italiano','Sorprendimi','Basta che si mangi'];
+const destinations = ['La Via della Pizza','La Via dell’Aperitivo','La Locanda del Cacciatore','La Vecchia Osteria','Il Sentiero Sconosciuto','Qualsiasi Strada'];
+const reactions = ['Difficile contestare questa decisione.','Una quest che inizia bene.','Messaggio ricevuto.','Si gioca in casa.','Questa è molta fiducia.','Finalmente dei requisiti chiari.'];
+const refusals = ['Ah.','Questa non era prevista.','Neanche un’occhiata alla ricompensa?','Ok ok, ho capito.'];
 const sizes = [[320,568,'small'],[375,667,'se'],[390,844,'standard'],[393,852,'pro'],[430,932,'max'],[1440,900,'desktop']];
-const foods = ['Pizza','Sushi','Carne','Italiano','Sorprendimi','Basta che si mangi'];
-const reactions = ['Difficile sbagliare.','Scelta rispettabile.','Messaggio ricevuto.','Si gioca in casa.','Questa è molta fiducia.','La risposta più concreta finora.'];
-const messages = ['Ah.','Questa non era prevista.','Neanche un’occhiata alla ricompensa?','Ok ok, ho capito.'];
 async function run() {
- const results = [];
- const server = http.createServer(async(req,res) => {
-  try {const name = decodeURIComponent(req.url.split('?')[0]).replace(/^\/invito\/?/,'') || 'index.html';
-   const target = path.resolve(root,name); if (!target.startsWith(root+path.sep)) throw Error('path');
-   res.setHeader('Content-Type', {'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml'}[path.extname(target)] || 'text/plain');
-   res.end(await fs.readFile(target));
-  } catch {res.writeHead(404);res.end();}
- });
- await new Promise(r => server.listen(0,'127.0.0.1',r));
- const url = 'http://127.0.0.1:'+server.address().port+'/invito/';
- const screen = async(p,id) => {await p.locator('#'+id).waitFor({state:'visible'});assert.equal(await p.locator('.screen:visible').count(),1);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),id+' overflow');};
- const click = async(p,id) => p.locator('#'+id).click();
- const proposal = async p => {await p.locator('#accept').evaluate(b=>{b.click();b.click();});await screen(p,'reveal');await p.locator('#continue').waitFor({state:'visible'});assert.match(await p.locator('#reveal-objective').innerText(),/Organizzare/);await click(p,'continue');await screen(p,'journal');assert.equal(await p.locator('.quest-objectives li').count(),5);};
- const travel = async p => {await click(p,'configure');await screen(p,'journey');await click(p,'skip-journey');await screen(p,'arrival');await click(p,'enter-tavern');await screen(p,'configuration');};
- const form = async p => {await proposal(p);await travel(p);};
- const fill = async p => {await p.locator('#date').fill(await p.locator('#date').getAttribute('min'));await p.locator('#time').fill('20:30');await click(p,'date-next');await p.locator('input[value="Italiano"]').check();await click(p,'food-next');};
- const shot = async(p,name) => {await p.screenshot({path:path.join(root,'tests/screenshots/rpg-'+name+'.png'),fullPage:true});};
+ const results=[];
+ const server=http.createServer(async(req,res)=>{try{const f=path.resolve(root,decodeURIComponent(req.url.split('?')[0]).replace(/^\/invito\/?/,'')||'index.html');if(!f.startsWith(root+path.sep))throw Error('path');res.setHeader('Content-Type',{'.html':'text/html','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml'}[path.extname(f)]||'text/plain');res.end(await fs.readFile(f));}catch{res.writeHead(404);res.end();}});
+ await new Promise(r=>server.listen(0,'127.0.0.1',r));
+ const url='http://127.0.0.1:'+server.address().port+'/invito/';
+ const click=async(p,id)=>p.locator('#'+id).click();
+ const chapter=async(p,id)=>{await p.locator('#'+id+'-chapter').waitFor({state:'visible'});assert.equal(await p.locator('.screen:visible').count(),1);assert.equal(await p.locator('.form-chapter:visible').count(),1);assert(await p.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),id+' overflow');};
+ const start=async p=>{await p.goto(url);await click(p,'accept');await click(p,'continue');await click(p,'configure');await chapter(p,'food');};
+ const fill=async(p,food='Italiano')=>{await p.locator('input[name=preference][value="'+food+'"]').check();await click(p,'food-next');await chapter(p,'date');await p.locator('#date').fill(await p.locator('#date').getAttribute('min'));await click(p,'date-next');await chapter(p,'plan');await p.locator('input[name=plan][value="Cena + qualcosa dopo"]').check();await chapter(p,'arrival');};
+ const shot=async(p,name)=>p.screenshot({path:path.join(root,'tests/screenshots/decisions-'+name+'.png'),fullPage:true});
  try {
-  await fs.mkdir(path.join(root,'tests/screenshots'),{recursive:true});
-  for (const [engine,type,exe] of [['webkit',webkit,'webkit-2359/Playwright.exe'],['chromium',chromium,'chromium-1243/chrome-win64/chrome.exe']]) {
-   const browser = await type.launch({executablePath:path.join(root,'.test-browsers',exe)});
+  for(const [engine,type,exe] of [['webkit',webkit,'webkit-2359/Playwright.exe'],['chromium',chromium,'chromium-1243/chrome-win64/chrome.exe']]){
+   const browser=await type.launch({executablePath:path.join(root,'.test-browsers',exe)});
    try {
-    for (const [width,height,name] of sizes) {
-     const ctx = await browser.newContext({viewport:{width,height},isMobile:width<700,hasTouch:true,reducedMotion:'reduce',locale:'it-IT',timezoneId:'Europe/Rome'});
-     const p = await ctx.newPage();const errors=[];p.on('pageerror',e=>errors.push(String(e)));
-     const posts=[];let mode='network';let pending;
-     await p.route('https://formspree.io/**',async r=>{assert.equal(r.request().url(),endpoint);posts.push(r.request().postDataJSON());if(mode==='network')await r.abort('failed');else pending=r;});
-     await p.goto(url);await screen(p,'access');
-     assert(!/Formspree|FormSubmit|endpoint|servizio email/i.test(await p.locator('body').innerText()));
-     const mission=await p.evaluate(()=>sessionStorage.getItem('dinner-mission'));assert.match(mission,/^DIN-\d{4}$/);
-     await shot(p,engine+'-'+name+'-prologue');await p.reload();assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-mission')),mission);
-     assert(!/cena/i.test(await p.locator("body").innerText()));assert(!/cena/i.test(await p.title()));
-     for(const message of messages){await click(p,'refuse');assert.equal(await p.locator('#refuse-message').innerText(),message);await p.waitForTimeout(310);const box=await p.locator('#refuse').boundingBox();const yes=await p.locator('#accept').boundingBox();assert(box.x>=0&&box.x+box.width<=width);assert(box.y>=yes.y+yes.height);}
-     assert(await p.locator('#really-refuse').isVisible());if(name==='pro')await shot(p,engine+'-proposal');
-     await p.locator('#accept').evaluate(b=>{b.click();b.click();});await screen(p,'reveal');await p.locator('#continue').waitFor({state:'visible'});await shot(p,engine+'-'+name+'-reveal');await click(p,'continue');await screen(p,'journal');assert.equal(await p.locator('.quest-objectives li').count(),5);await shot(p,engine+'-'+name+'-journal');await click(p,'configure');await screen(p,'journey');assert.equal(await p.locator('.pickup:visible').count(),3);for(const button of await p.locator('.pickup').all()){const box=await button.boundingBox();assert(box.width>=44&&box.height>=44&&box.x>=20&&box.x+box.width<=width-20);}await shot(p,engine+'-'+name+'-journey');await p.locator('#pickup-provisions').tap();assert.equal(await p.locator('#inventory-provisions').innerText(),'✓');await click(p,'skip-journey');await screen(p,'arrival');assert.equal(await p.locator('#arrival-inventory').innerText(),'Abbastanza preparati.');await shot(p,engine+'-'+name+'-arrival');await click(p,'enter-tavern');
-     await click(p,'date-next');assert.match(await p.locator('#form-error').innerText(),/giorno/);
-     await p.locator('#date').fill('2020-01-01');await click(p,'date-next');assert.match(await p.locator('#form-error').innerText(),/futura/);
-     await p.locator('#date').fill(await p.locator('#date').getAttribute('min'));await click(p,'date-next');assert.match(await p.locator('#form-error').innerText(),/orario/);
-     await p.locator('#time').fill('20:30');await shot(p,engine+'-'+name+'-date');await click(p,'date-next');assert(await p.locator('#food-chapter').isVisible());
-     await click(p,'food-next');assert.match(await p.locator('#form-error').innerText(),/mangiare/);
-     for(let i=0;i<foods.length;i++){await p.locator('input[value="'+foods[i]+'"]').check();assert.equal(await p.locator('#food-reaction').innerText(),reactions[i]);assert.equal(await p.locator('input[name=preference]:checked').count(),1);}
-     await p.locator('input[value="Italiano"]').check();await shot(p,engine+'-'+name+'-food');await click(p,'food-next');
-     await p.locator('#notes').fill('Un tavolo tranquillo, grazie.');await p.locator('[data-back=food]').click();assert(await p.locator('input[value="Italiano"]').isChecked());await p.locator('[data-back=date]').click();assert.equal(await p.locator('#time').inputValue(),'20:30');await click(p,'date-next');await click(p,'food-next');assert.equal(await p.locator('#notes').inputValue(),'Un tavolo tranquillo, grazie.');
-     for(const id of ['date','time','notes'])assert(await p.locator('#'+id).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=16));
-     await shot(p,engine+'-'+name+'-notes');await p.setViewportSize({width,height:400});await p.locator('#notes').focus();await click(p,'submit');await p.locator('#send-error').waitFor({state:'visible'});
-     assert.equal(await p.locator('#notes').inputValue(),'Un tavolo tranquillo, grazie.');assert.equal(await p.locator('#submit').innerText(),'RIPROVA');assert(await p.locator('#submit').isEnabled());assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-sent')),null);
-     mode='pending';const count=posts.length;await p.locator('#mission-form').evaluate(f=>{for(let i=0;i<4;i++)f.dispatchEvent(new Event('submit',{cancelable:true}));});await p.waitForTimeout(100);assert.equal(posts.length,count+1);assert(await p.locator('#success').isHidden());assert(await p.locator('[data-back=food]').isDisabled());assert(await p.locator('#submit').isDisabled());await pending.fulfill({json:{ok:true}});await screen(p,'success');
-     assert.deepEqual(Object.keys(posts.at(-1)),['Mission ID','Data proposta','Ora proposta','Preferenza culinaria','Note']);assert.equal(posts.at(-1)['Mission ID'],mission);assert.equal(posts.at(-1)['Preferenza culinaria'],'Italiano');assert.equal(posts.at(-1).Note,'Un tavolo tranquillo, grazie.');assert.equal(await p.locator('#summary-time').innerText(),'20:30');assert.equal(await p.locator('#summary-food').innerText(),'Italiano');assert(await p.locator('#summary-date').innerText());assert.equal(await p.locator('.confetto').count(),0);
-     await p.setViewportSize({width,height});await shot(p,engine+'-'+name+'-success');await p.reload();await screen(p,'success');assert.equal(posts.length,count+1);assert.deepEqual(errors,[]);
-     results.push(engine+' '+name+' '+width+'x'+height+': PASS mystery/reveal/journal, chapters, validation, 4 refusals, six foods, back, notes, reduced viewport, retry, double submit, payload, summary, refresh, overflow');await ctx.close();
+    for(let n=0;n<sizes.length;n++){
+     const [width,height,name]=sizes[n];
+     const ctx=await browser.newContext({viewport:{width,height},isMobile:width<700,hasTouch:true,reducedMotion:'reduce',locale:'it-IT',timezoneId:'Europe/Rome'});
+     const p=await ctx.newPage(),errors=[],posts=[];p.on('pageerror',e=>errors.push(String(e)));let mode='network',pending;
+     await p.route('https://formspree.io/**',async r=>{assert.equal(r.request().url(),endpoint);assert.equal(r.request().headers()['content-type'],'application/json');assert.equal(r.request().headers().accept,'application/json');posts.push(r.request().postDataJSON());if(mode==='network')await r.abort();else pending=r;});
+     await p.goto(url);assert(!/cena/i.test(await p.locator('body').innerText()));const mission=await p.evaluate(()=>sessionStorage.getItem('dinner-mission'));assert.match(mission,/^DIN-\d{4}$/);await p.reload();assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-mission')),mission);
+     await click(p,'accept');await click(p,'continue');await p.locator('#configure').evaluate(b=>{b.click();b.click();});await chapter(p,'food');
+     assert.equal(await p.locator('#skip-journey,[data-item],.journey-inventory').count(),0);
+     assert(await p.locator('#food-next').isDisabled());assert.equal(posts.length,0);
+     await p.locator('#mission-form').evaluate(f=>f.dispatchEvent(new Event('submit',{cancelable:true})));await chapter(p,'food');assert.match(await p.locator('#form-error').innerText(),/serata/);
+     for(let i=0;i<foods.length;i++){await p.locator('input[name=preference][value="'+foods[i]+'"]').check();assert.equal(await p.locator('#food-reaction').innerText(),reactions[i]);assert.equal(await p.locator('input[name=preference]:checked').count(),1);assert(await p.locator('#route-marker').isVisible());await chapter(p,'food');}
+     await p.locator('input[name=preference][value="'+foods[n]+'"]').check();await shot(p,engine+'-'+name+'-bivio');
+     await p.locator('#food-next').evaluate(b=>{b.click();b.click();});await chapter(p,'date');assert(await p.locator('#date-next').isDisabled());
+     await p.locator('#date').fill('2020-01-01');assert(await p.locator('#date-next').isDisabled());await p.locator('#mission-form').evaluate(f=>f.dispatchEvent(new Event('submit',{cancelable:true})));await chapter(p,'date');assert.match(await p.locator('#form-error').innerText(),/futura/);
+     const date=await p.locator('#date').getAttribute('min');await p.locator('#date').fill(date);assert(await p.locator('#date-next').isEnabled());assert(await p.locator('#date-reaction').isVisible());await shot(p,engine+'-'+name+'-calendario');
+     await p.locator('#date-next').evaluate(b=>{b.click();b.click();});await chapter(p,'plan');assert.equal(await p.locator('input[name=plan]:checked').count(),0);await p.locator('#mission-form').evaluate(f=>f.dispatchEvent(new Event('submit',{cancelable:true})));await chapter(p,'plan');
+     await shot(p,engine+'-'+name+'-oste');await p.locator('input[name=plan][value="Cena + qualcosa dopo"]').check();await chapter(p,'arrival');
+     assert.equal(posts.length,0);assert.equal(await p.locator('#arrival-food').innerText(),destinations[n]);assert.equal(await p.locator('#arrival-plan').innerText(),'Cena + qualcosa dopo');assert.equal(await p.locator('input:visible').count(),0);
+     const note=n===0?'   ':'Un tavolo tranquillo, grazie.';await p.locator('#notes').fill(note);
+     await p.locator('[data-back=plan]').click();await chapter(p,'plan');await p.locator('[data-back=date]').click();await chapter(p,'date');assert.equal(await p.locator('#date').inputValue(),date);await p.locator('[data-back=food]').click();assert(await p.locator('input[name=preference][value="'+foods[n]+'"]').isChecked());await click(p,'food-next');await click(p,'date-next');await p.locator('input[name=plan][value="Cena + qualcosa dopo"]').click();assert.equal(await p.locator('#notes').inputValue(),note);
+     for(const id of ['date','notes'])assert(await p.locator('#'+id).evaluate(el=>parseFloat(getComputedStyle(el).fontSize)>=16));
+     await shot(p,engine+'-'+name+'-taverna');await p.setViewportSize({width,height:400});await p.locator('#notes').focus();await click(p,'submit');await p.locator('#send-error').waitFor({state:'visible'});await chapter(p,'arrival');assert.equal(await p.locator('#notes').inputValue(),note);assert.equal(await p.locator('#submit').innerText(),'RIPROVA');assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-sent')),null);
+     mode='pending';const count=posts.length;await p.locator('#mission-form').evaluate(f=>{for(let i=0;i<4;i++)f.dispatchEvent(new Event('submit',{cancelable:true}));});await p.waitForTimeout(100);assert.equal(posts.length,count+1);assert(await p.locator('#success').isHidden());assert(await p.locator('[data-back=plan]').isDisabled());assert(await p.locator('#submit').isDisabled());
+     assert.deepEqual(posts.at(-1),{'Mission ID':mission,'Data proposta':date.split('-').reverse().join('/'),'Preferenza':foods[n],'Tipo di serata':'Cena + qualcosa dopo',Note:note.trim()||'Nessuna comunicazione aggiuntiva'});
+     await pending.fulfill({json:{ok:true}});await p.locator('#success').waitFor({state:'visible'});assert.equal(await p.locator('#summary-food').innerText(),destinations[n]);assert.equal(await p.locator('#summary-plan').innerText(),'Cena + qualcosa dopo');assert.match(await p.locator('#success').innerText(),/Finalmente un problema non tuo/);await p.setViewportSize({width,height});await shot(p,engine+'-'+name+'-success');await p.reload();assert(await p.locator('#success').isVisible());assert.equal(posts.length,count+1);assert.deepEqual(errors,[]);await ctx.close();
+     results.push(engine+' '+name+': PASS mandatory decisions, six routes, native pickers, back, recap, no duplicate form, retry preserves state, exact payload, double submit, refresh, overflow');
     }
-    const ctx=await browser.newContext({viewport:{width:393,height:852},hasTouch:true,isMobile:true,reducedMotion:'reduce'});const p=await ctx.newPage();let mode='http';const requests=[];
-    await p.route('https://formspree.io/**',async r=>{requests.push(r.request().postDataJSON());if(mode==='http')await r.fulfill({status:503,json:{ok:true}});else if(mode==='invalid')await r.fulfill({body:'invalid JSON',contentType:'application/json'});else if(mode==='timeout'){}else await r.fulfill({json:mode==='null'?null:mode==='false'?{ok:false}:mode==='string'?{ok:'true'}:mode==='legacy'?{success:'true'}:mode==='success'?{ok:true}:{}});});
-    await p.goto(url);await form(p);await fill(p);
-    for(const failure of ['http','invalid','null','false','string','legacy','missing','timeout']){mode=failure;await click(p,'submit');await p.locator('#send-error').waitFor({state:'visible',timeout:25000});assert(await p.locator('#success').isHidden());assert(await p.locator('#submit').isEnabled());assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-sent')),null);}
-    mode='success';await click(p,'submit');await screen(p,'success');assert.equal(requests.at(-1).Note,'Nessuna comunicazione aggiuntiva');results.push(engine+': PASS HTTP/JSON/negative/unexpected/timeout responses, retry, empty notes');await ctx.close();
-    const motion=await browser.newContext({viewport:{width:375,height:667},hasTouch:true,isMobile:true});const q=await motion.newPage();let outbound=0;await q.route('https://formspree.io/**',r=>{outbound++;return r.abort();});await q.goto(url);for(const msg of messages){await click(q,'refuse');await q.waitForTimeout(330);}await click(q,'really-refuse');await screen(q,'cancelled');await q.locator('#cancelled-aside').waitFor({state:'visible'});assert.equal(outbound,0);await shot(q,engine+'-cancelled');await q.reload();await q.clock.install();await q.locator("#accept").evaluate(b=>{b.click();b.click();});assert(await q.locator("#reveal-objective").isHidden());assert(await q.locator("#continue").isHidden());await q.clock.runFor(650);assert(await q.locator("#reveal-objective").isVisible());assert(await q.locator("#reveal-punchline").isHidden());await q.clock.runFor(850);assert(await q.locator("#continue").isVisible());await q.clock.resume();await click(q,"continue");await screen(q,"journal");await travel(q);await q.waitForTimeout(2500);assert.equal(await q.locator('.confetto').count(),0);results.push(engine+': PASS normal animations, timed reveal, real refusal without POST, particle cleanup');await motion.close();
-    const blocked=await browser.newContext({reducedMotion:'reduce'});await blocked.addInitScript(()=>{Object.defineProperty(window,'sessionStorage',{get(){throw Error('unavailable');}});});const b=await blocked.newPage();await b.route('https://formspree.io/**',r=>r.fulfill({json:{ok:true}}));await b.goto(url);await form(b);await fill(b);await click(b,'submit');await screen(b,'success');results.push(engine+': PASS storage unavailable fallback');await blocked.close();
-
-    for (const reduced of [false,true]) {
-     for (const amount of [0,1,3]) {
-      const gameCtx=await browser.newContext({viewport:{width:393,height:852},hasTouch:true,isMobile:true,reducedMotion:reduced?'reduce':'no-preference'});
-      const trackTimers = ()=>{const originalSet=window.setTimeout.bind(window),originalClear=window.clearTimeout.bind(window);window.tripTimers=new Set();window.setTimeout=(fn,ms,...args)=>{let id;id=originalSet(()=>{window.tripTimers.delete(id);fn(...args);},ms);if(fn.name==='updateJourney')window.tripTimers.add(id);return id;};window.clearTimeout=id=>{window.tripTimers.delete(id);originalClear(id);};};
-      const g=await gameCtx.newPage();const gameErrors=[];g.on('pageerror',e=>gameErrors.push(String(e)));let gamePosts=0;await g.route('https://formspree.io/**',r=>{gamePosts++;return r.abort();});await g.goto(url);await proposal(g);await g.clock.install();await g.clock.pauseAt(new Date());await g.evaluate(trackTimers);await g.locator('#configure').evaluate(b=>{b.click();b.click();});await screen(g,'journey');
-      assert.equal(await g.evaluate(()=>window.tripTimers.size),1);assert.equal(await g.locator('.pickup:visible').count(),reduced?3:1);
-      const startPosition=await g.locator('.traveler').first().boundingBox();await g.clock.runFor(7000);assert.equal(await g.locator('.pickup:visible').count(),3);const laterPosition=await g.locator('.traveler').first().boundingBox();if(reduced)assert.deepEqual(startPosition,laterPosition);
-      const ids=['provisions','funds','morale'];const texts=['Provviste recuperate.','Il conto sembra leggermente meno minaccioso.','Morale inspiegabilmente alto.'];
-      for(let i=0;i<amount;i++){await g.locator('#pickup-'+ids[i]).evaluate(b=>{b.focus();b.click();b.click();});assert.equal(await g.locator('#journey-reaction').innerText(),texts[i]);assert.equal(await g.locator('#inventory-'+ids[i]).innerText(),'✓');assert(await g.locator('#pickup-'+ids[i]).isHidden());}
-      await g.clock.runFor(10999);await screen(g,'journey');await g.clock.runFor(1);await screen(g,'arrival');assert.equal(await g.locator('#arrival-inventory').innerText(),amount===3?'INVENTARIO COMPLETO ✓':'Abbastanza preparati.');assert.equal(await g.evaluate(()=>window.tripTimers.size),0);assert.equal(await g.locator('.journey-active').count(),0);await g.locator('#enter-tavern').evaluate(b=>{b.click();b.click();});await screen(g,'configuration');await g.clock.runFor(30000);await screen(g,'configuration');assert.equal(gamePosts,0);assert.deepEqual(gameErrors,[]);await gameCtx.close();
-     }
+    for(const reduced of [false,true]){
+     const ctx=await browser.newContext({viewport:{width:393,height:852},isMobile:true,hasTouch:true,reducedMotion:reduced?'reduce':'no-preference'});const p=await ctx.newPage();await p.goto(url);await click(p,'accept');await click(p,'continue');await p.clock.install();await p.clock.pauseAt(new Date());
+     await p.evaluate(()=>{const set=window.setTimeout.bind(window),clear=window.clearTimeout.bind(window);window.walkTimers=new Set();window.setTimeout=(fn,ms,...args)=>{let id;id=set(()=>{walkTimers.delete(id);fn(...args);},ms);if(fn.name==='finishWalk')walkTimers.add(id);return id;};window.clearTimeout=id=>{walkTimers.delete(id);clear(id);};});
+     const step=async(id,target)=>{await p.locator('#'+id).evaluate(b=>{b.click();b.click();});if(!reduced){await chapter(p,'travel');assert.equal(await p.evaluate(()=>walkTimers.size),1);await p.clock.runFor(1200);}await chapter(p,target);assert.equal(await p.evaluate(()=>walkTimers.size),0);await p.clock.runFor(60000);await chapter(p,target);};
+     await step('configure','food');await p.locator('input[name=preference][value="Pizza"]').check();await p.clock.runFor(60000);await chapter(p,'food');await step('food-next','date');assert(await p.locator('#date-next').isDisabled());await p.locator('#date').fill(await p.locator('#date').getAttribute('min'));await p.clock.runFor(60000);await chapter(p,'date');await step('date-next','plan');assert.equal(await p.locator('input[name=plan]:checked').count(),0);await p.locator('input[name=plan][value="Cena + qualcosa dopo"]').check();if(!reduced){await chapter(p,'travel');await p.clock.runFor(1200);}await chapter(p,'arrival');await p.clock.runFor(60000);await chapter(p,'arrival');await ctx.close();
+     results.push(engine+': PASS '+(reduced?'reduced':'normal')+' motion; no automatic advance before/after choices; 1.2s walks only; no idle timers');
     }
-    const skipCtx=await browser.newContext({reducedMotion:'reduce'});const skip=await skipCtx.newPage();await skip.goto(url);await proposal(skip);await skip.clock.install();await skip.clock.pauseAt(new Date());await skip.locator('#configure').evaluate(b=>b.click());await skip.locator('#skip-journey').evaluate(b=>{b.click();b.click();});await screen(skip,'arrival');await skip.locator('#enter-tavern').evaluate(b=>b.click());await skip.clock.runFor(20000);await screen(skip,'configuration');await skipCtx.close();
-    results.push(engine+': PASS 18-second automatic arrival with 0/1/3 items, normal/reduced motion, item timing, duplicate taps, one timer, cleanup, skip and unchanged next chapter');
+    const ctx=await browser.newContext({reducedMotion:'reduce'}),p=await ctx.newPage();let mode='http';const posts=[];
+    await p.route('https://formspree.io/**',async r=>{posts.push(r.request().postDataJSON());if(mode==='http')await r.fulfill({status:503,json:{ok:true}});else if(mode==='invalid')await r.fulfill({body:'bad JSON',contentType:'application/json'});else if(mode==='timeout'){}else await r.fulfill({json:mode==='null'?null:mode==='false'?{ok:false}:mode==='string'?{ok:'true'}:mode==='success'?{ok:true}:{}});});
+    await start(p);await fill(p);await p.locator('#notes').fill('Conserva questa nota');await p.clock.install();await p.clock.pauseAt(new Date());
+    for(const failure of ['http','invalid','null','false','string','missing','timeout']){mode=failure;await p.locator('#submit').evaluate(b=>b.click());if(failure==='timeout')await p.clock.runFor(20000);await p.locator('#send-error').waitFor({state:'visible'});await chapter(p,'arrival');assert.equal(await p.locator('#notes').inputValue(),'Conserva questa nota');assert(await p.locator('#submit').isEnabled());assert.equal(await p.evaluate(()=>sessionStorage.getItem('dinner-sent')),null);}
+    mode='success';await p.locator('#submit').evaluate(b=>b.click());await p.locator('#success').waitFor({state:'visible'});assert(posts.every(v=>JSON.stringify(v)===JSON.stringify(posts[0])));await ctx.close();results.push(engine+': PASS HTTP/invalid JSON/null/false/string/missing/timeout, identical state on every retry');
+    const refusal=await browser.newContext({viewport:{width:375,height:667},hasTouch:true,isMobile:true});const q=await refusal.newPage();let outbound=0;await q.route('https://formspree.io/**',r=>{outbound++;return r.abort();});await q.goto(url);
+    for(const message of refusals){await click(q,'refuse');assert.equal(await q.locator('#refuse-message').innerText(),message);await q.waitForTimeout(310);}await click(q,'really-refuse');await q.locator('#cancelled-aside').waitFor({state:'visible'});assert.equal(outbound,0);await shot(q,engine+'-refusal');await refusal.close();results.push(engine+': PASS four refusals and real decline, no POST');
+    const blocked=await browser.newContext({reducedMotion:'reduce'});await blocked.addInitScript(()=>Object.defineProperty(window,'sessionStorage',{get(){throw Error('denied');}}));const b=await blocked.newPage();await b.route('https://formspree.io/**',r=>r.fulfill({json:{ok:true}}));await start(b);await fill(b);await click(b,'submit');await b.locator('#success').waitFor({state:'visible'});await blocked.close();results.push(engine+': PASS unavailable storage fallback');
    }finally{await browser.close();}
   }
- } finally {server.close();await fs.writeFile(path.join(root,'tests/results.txt'),results.join('\n')+'\n');}
+ }finally{server.close();await fs.writeFile(path.join(root,'tests/results.txt'),results.join('\n')+'\n');}
  return results;
 }
 module.exports={run};

@@ -1017,35 +1017,55 @@ body[data-scene=food] .world-art,body[data-scene=notes] .world-art {
 .quest-reward p { font: italic 18px/1.6 var(--serif); margin: 0; }
 @media (prefers-reduced-motion: reduce) { #reveal-objective, #reveal-punchline { animation: none; } }
 
-/* Optional microgame, using the same original world and warm parchment palette. */
-.trail-stage { position: relative; width: 100%; aspect-ratio: 600 / 460; border: 1px solid var(--line); background: #25372f url('./assets/tavern-trail.svg') center / cover no-repeat; isolation: isolate; margin: 23px 0 0; border-radius: 2px; box-shadow: inset 0 0 30px #0c191b55; }
-.trail-destination { position: absolute; left: 60%; top: 6%; font-size: 7px; letter-spacing: 1.5px; color: #f1d7a7; }
+/* The trail is the form: four stops, with no automatic decision progression. */
+.quest-adventure .quest-route { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); list-style: none; padding: 0; margin: 0 0 20px; }
+.quest-route li { position: relative; text-align: center; font-size: 8px; letter-spacing: .6px; color: var(--muted); }
+.quest-route li>span { display: block; position: relative; font-size: 15px; margin-bottom: 7px; z-index: 1; }
+.quest-route li:not(:last-child)::after { content: ''; position: absolute; height: 1px; width: 65%; top: 9px; left: 67%; background: var(--line); }
+.quest-route .reached, .quest-route [aria-current=step] { color: var(--gold); }
+.trail-stage { position: relative; width: 100%; aspect-ratio: 600 / 460; border: 1px solid var(--line); background: #25372f url('./assets/tavern-trail.svg') center / 100% 100% no-repeat; isolation: isolate; margin: 20px 0 25px; border-radius: 2px; box-shadow: inset 0 0 30px #0c191b55; }
+.trail-destination { position: absolute; left: 60%; top: 5%; font-size: 7px; letter-spacing: 1.5px; color: #f1d7a7; }
 .trail-destination span { display: block; text-align: center; font-size: 18px; margin-top: 3px; }
-.trail-caption { position: absolute; bottom: 10px; left: 0; width: 100%; text-align: center; font-size: 6px; letter-spacing: 1.3px; color: #d9c5a1; }
-.traveler { position: absolute; left: 18%; top: 80%; width: 32px; height: 47px; transform: translate(-50%, -100%); pointer-events: none; z-index: 1; }
+.traveler { position: absolute; left: 18%; top: 80%; width: 30px; height: 44px; transform: translate(-50%, -100%); pointer-events: none; z-index: 1; }
 .traveler svg { display: block; width: 100%; height: 100%; }
-.journey-active .traveler { animation: walk-trail 18s linear forwards; }
-.journey-active .traveler svg { animation: walking .65s ease-in-out infinite; }
-.pickup-position { position: absolute; width: 58px; height: 58px; transform: translate(-50%, -50%); z-index: 2; }
-.pickup-provisions { left: 25%; top: 64%; }
-.pickup-funds { left: 49%; top: 42%; }
-.pickup-morale { left: 76%; top: 57%; }
-.pickup { display: grid; place-items: center; width: 58px; height: 58px; border: 1px solid #d7b978; border-radius: 50%; color: var(--gold); background: radial-gradient(circle, #67513a, #27312a); box-shadow: 0 0 0 5px #d6b07715, 0 3px 17px #0b171b88; touch-action: manipulation; animation: arrive .35s ease both; }
-.pickup .icon { width: 35px; height: 35px; }
-.pickup:active { background: #72543a; }
-.pickup-position.collected::after { content: '✧'; position: absolute; inset: 0; display: grid; place-items: center; font-size: 30px; color: #efd394; pointer-events: none; animation: collect-spark .7s ease-out both; }
-.tap-hint { margin: 12px 0 17px; color: var(--muted); font-size: 11px; text-align: center; }
-.journey-inventory { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); list-style: none; gap: 6px; padding: 16px 10px; margin: 0; border: 1px solid #b59a6d; color: #413628; background: linear-gradient(125deg, #e1d2b1, #c9b790); }
-.journey-inventory li { text-align: center; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; }
-.journey-inventory li>span:last-child { display: block; margin-top: 8px; font-size: 17px; line-height: 1; color: #5a5334; }
-#journey .intro { margin-bottom: 15px; }
-#journey .food-reaction { text-align: center; font-size: 14px; min-height: 44px; margin: 14px 0 0; }
-#skip-journey { margin-top: 1px; font-size: 10px; letter-spacing: 1.2px; }
-.trail-arrived { margin-bottom: 26px; }
-.trail-arrived .traveler { left: 75%; top: 40%; }
-.tavern-glow { position: absolute; left: 59%; top: 16%; width: 35%; height: 35%; pointer-events: none; background: radial-gradient(ellipse, #f3c87b66, transparent 70%); animation: arrive .8s ease both; }
-@keyframes walk-trail { 0% { left: 18%; top: 80%; } 25% { left: 30%; top: 71%; } 45% { left: 50%; top: 65%; } 65% { left: 48%; top: 56%; } 85% { left: 59%; top: 43%; } 100% { left: 75%; top: 40%; } }
+.decision-stage[data-stop=food] .traveler { left: 30%; top: 71%; }
+.decision-stage[data-stop=date] .traveler { left: 50%; top: 65%; }
+.decision-stage[data-stop=plan] .traveler { left: 59%; top: 43%; }
+.decision-stage[data-stop=arrival] .traveler { left: 75%; top: 40%; }
+.decision-stage.walking { transition: background-size 1.2s ease-in-out, background-position 1.2s ease-in-out; }
+.decision-stage.walking .traveler { transition: left 1.2s ease-in-out, top 1.2s ease-in-out; }
+.decision-stage.walking .traveler svg { animation: walking .6s ease-in-out 2; }
+.decision-stage[data-stop=arrival] { background-size: 135% 135%; background-position: 75% 40%; background-color: #465039; box-shadow: inset 0 0 30px #ddb27022; }
+.tavern-glow { position: absolute; left: 59%; top: 16%; width: 35%; height: 35%; pointer-events: none; background: radial-gradient(ellipse, #f3c87b77, transparent 70%); animation: arrive .8s ease both; }
+.route-marker { position: absolute; left: 5%; top: 12%; max-width: 42%; padding: 7px 10px; border: 1px solid var(--line); background: #182522e8; color: #e8cd99; text-align: center; animation: arrive .4s ease both; }
+#route-symbol .icon { width: 27px; height: 27px; }
+#route-name { display: block; font: 11px/1.4 var(--serif); }
+.decision-stage[data-route=Pizza] .route-marker { border-radius: 16px 16px 2px 2px; background: #573a2ce8; }
+.decision-stage[data-route=Aperitivo] .route-marker { border-radius: 12px; box-shadow: 0 0 15px #dbb06833; }
+.decision-stage[data-route=Italiano] .route-marker { border-color: #829267; box-shadow: inset 5px 0 #52634b; }
+.destinations { position: relative; padding: 13px; border: 1px solid var(--line); background: linear-gradient(#14252266,#14252266), url('./assets/time-map.svg') center / cover; gap: 16px 12px; }
+.destinations .food>span { min-height: 126px; padding: 13px 8px; border-radius: 2px 12px 2px 2px; background: linear-gradient(135deg,#2e382feb,#192320f5); }
+.destinations .food>span>span { font: 16px/1.3 var(--serif); }
+.destinations .food small { font-size: 10px; letter-spacing: .3px; color: #d1c7ad; }
+.destinations .food input:checked+span { background: linear-gradient(135deg,#644237,#3b2d28); }
+.route-reaction { padding: 18px 0; border-top: 1px solid var(--line); margin-bottom: 16px; animation: arrive .4s ease both; }
+.route-reaction .eyebrow { margin-bottom: 8px; }
+.route-reaction .aside { margin: 0; }
+.choice-reaction { padding-top: 18px; text-align: center; color: #51402b; }
+.choice-reaction strong { font: 18px/1.6 var(--serif); text-transform: uppercase; }
+.choice-reaction p { font: italic 15px/1.6 var(--serif); margin: 9px 0 0; }
+.bell-mark { display: block; width: 75px; height: 75px; margin: 0 auto 20px; color: #79603d; }
+.quest-recap dl { margin: 0; }
+.quest-recap dl>div { border-top: 1px solid #9a805944; padding: 14px 0 4px; }
+.quest-recap dt { font: 8px/1.6 var(--sans); text-transform: uppercase; letter-spacing: 1.3px; color: #71582f; }
+.quest-recap dd { font: 19px/1.6 var(--serif); margin: 4px 0; }
+#arrival-chapter .letter-paper .eyebrow { color: #71582f; }
+#configuration .primary:disabled { cursor: default; }
+#travel-chapter { min-height: 270px; padding-top: 45px; }
 @keyframes walking { 50% { transform: translateY(-2px) rotate(2deg); } }
-@keyframes collect-spark { from { opacity: 1; transform: scale(.6); text-shadow: -10px 8px #d9ad6c, 10px 7px #d9ad6c; } to { opacity: 0; transform: translateY(-30px) scale(1.4); text-shadow: -20px 8px #d9ad6c00, 20px 7px #d9ad6c00; } }
-@media (max-width: 899px) { body[data-scene=journey] main, body[data-scene=arrival] main { margin-top: 50px; } }
-@media (prefers-reduced-motion: reduce) { .journey-active .traveler, .journey-active .traveler svg, .pickup, .tavern-glow { animation: none; } .pickup-position.collected::after { display: none; } }
+@media (max-width: 899px) { body[data-scene=food] main, body[data-scene=date] main, body[data-scene=plan] main, body[data-scene=arrival] main, body[data-scene=travel] main { margin-top: 45px; } }
+@media (max-width: 370px) { .destinations { padding: 8px; gap: 10px; } .destinations .food>span>span { font-size: 14px; } .destinations .food>span { min-height: 133px; } }
+@media (prefers-reduced-motion: reduce) { .decision-stage.walking .traveler { transition: none; } .decision-stage.walking .traveler svg, .tavern-glow, .route-marker, .route-reaction { animation: none; } }
+
+/* The innkeeper asks for one choice before entering the tavern. */
+.evening-plans{display:grid;gap:12px;border:0;padding:0;margin:24px 0}.evening-plans .food>span{min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:16px}.evening-plans .food small{font-size:14px;line-height:1.5}.destinations .route-description{text-transform:none;letter-spacing:0;font-size:12px;line-height:1.5}.quest-route li{min-width:0;overflow-wrap:normal}.quest-route{grid-template-columns:repeat(5,minmax(0,1fr))}
