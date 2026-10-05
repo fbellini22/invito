@@ -17,7 +17,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
   }
   const state = {
     screen: "access", chapter: "strategy", busy: false, submitting: false,
-    sent: storage.get("ikea-sent") === missionId, refusals: 0,
+    sent: storage.get("ikea-sent") === missionId, refusals: 0, draftDate: "",
     mission: { strategy: "", date: "", foodStop: "", forbiddenPurchase: "", notes: "" },
     travel: { timer: null, target: null }
   };
@@ -47,6 +47,9 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     const date = new Date();
     return date.getFullYear() + "-" + String(date.getMonth() + 1).padStart(2, "0") + "-" + String(date.getDate()).padStart(2, "0");
   }
+  function validDraftDate() {
+    return !!state.draftDate && $("date").validity.valid && state.draftDate >= today();
+  }
   function validDate() {
     return !!state.mission.date && $("date").validity.valid && state.mission.date >= today();
   }
@@ -64,11 +67,13 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
   }
   function updateChoices() {
     form.querySelectorAll("input, textarea, button").forEach((control) => { control.disabled = state.busy || state.submitting; });
-    $("date-reaction").hidden = !validDate();
-    if (validDate()) {
-      $("chosen-date").textContent = formatDate(state.mission.date);
-      const [year, month, day] = state.mission.date.split("-").map(Number);
-      $("date-joke").textContent = new Date(year, month - 1, day, 12).getDay() === 6 ? "Sabato. Una scelta coraggiosa." : "Il calendario ha approvato.";
+    $("confirm-date").disabled = state.busy || state.submitting || !validDraftDate();
+    $("date-reaction").hidden = !validDraftDate();
+    if (validDraftDate()) {
+      $("chosen-date").textContent = formatDate(state.draftDate);
+      const [year, month, day] = state.draftDate.split("-").map(Number);
+      const weekday = new Date(year, month - 1, day, 12).getDay();
+      $("date-joke").textContent = weekday === 6 ? "Una scelta coraggiosa." : weekday === 0 ? "Interessante. Molto interessante." : "Il calendario ha approvato.";
     }
   }
   function updateMinimum() { $("date").min = today(); updateChoices(); }
@@ -145,7 +150,8 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
     target.removeAttribute("aria-invalid");
     $("form-error").textContent = "";
     if (name === "date") {
-      state.mission.date = target.value;
+      state.draftDate = target.value;
+      $("confirm-date").textContent = "CONFERMA DATA →";
     } else if (reactions[name] && target.checked && Object.prototype.hasOwnProperty.call(reactions[name], target.value)) {
       state.mission[name] = target.value;
       form.querySelectorAll('[name="' + name + '"]').forEach((radio) => radio.removeAttribute("aria-invalid"));
@@ -153,7 +159,7 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       $(name + "-reaction").hidden = false;
     } else return;
     updateChoices();
-    if (name !== "date" || validDate()) advance();
+    if (name !== "date") advance();
   }
   form.addEventListener("input", recordChoice);
   form.addEventListener("change", recordChoice);
@@ -191,14 +197,25 @@ const FORM_ENDPOINT = "https://formspree.io/f/mbglenaa";
       travelTo(target);
     }
   }
-  function advance() {
+  $("confirm-date").addEventListener("click", () => {
+    if (state.screen !== "configuration" || state.chapter !== "date" || state.busy || state.submitting) return;
+    updateMinimum();
+    state.draftDate = $("date").value;
+    if (!validDraftDate()) { updateChoices(); return; }
+    state.mission.date = state.draftDate;
+    storage.set("ikea-confirmed-date", JSON.stringify({ missionId, date: state.mission.date }));
+    $("confirm-date").textContent = "✓ DATA CONFERMATA";
+    advance(true);
+  });
+  function advance(dateConfirmed = false) {
+    if (state.chapter === "date" && !dateConfirmed) return;
     if (state.screen !== "configuration" || state.busy || state.submitting || state.chapter === "arrival") return;
     const next = stops[stops.indexOf(state.chapter) + 1];
     if (!next || !validate(state.chapter)) return;
     state.busy = true;
     state.travel.target = next;
     updateChoices();
-    state.travel.timer = setTimeout(finishReaction, reducedMotion.matches ? 900 : 1100);
+    state.travel.timer = setTimeout(finishReaction, state.chapter === "date" ? 900 : reducedMotion.matches ? 900 : 1100);
   }
   document.querySelectorAll("[data-back]").forEach((button) => button.addEventListener("click", () => {
     if (state.screen === "configuration" && !state.busy && !state.submitting) showChapter(button.dataset.back);

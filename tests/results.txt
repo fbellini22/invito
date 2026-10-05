@@ -18,5 +18,5 @@ chromium: PASS normal motion, single timer, lifecycle cleanup
 chromium: PASS reduced motion, single timer, lifecycle cleanup
 chromium: PASS real refusal, no request
 chromium: PASS unavailable storage
-webkit: PASS real touch path, normal animations, Saturday, revise/reselect, note preservation, pending shipping and confirmed delivery
-chromium: PASS real touch path, normal animations, Saturday, revise/reselect, note preservation, pending shipping and confirmed delivery
+webkit: PASS iPhone viewport: edit Saturday/Sunday/weekday, blur, 60s idle, no timer/save/lock until actual confirmation tap, 900ms feedback, next stage
+chromium: PASS iPhone viewport: edit Saturday/Sunday/weekday, blur, 60s idle, no timer/save/lock until actual confirmation tap, 900ms feedback, next stage
