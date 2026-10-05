@@ -1,18 +1,22 @@
-webkit small: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit se: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit standard: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit pro: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit max: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit desktop: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-webkit: PASS normal motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
-webkit: PASS reduced motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
-webkit: PASS refusal unchanged
-chromium small: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium se: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium standard: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium pro: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium max: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium desktop: PASS automatic choices, 900ms reading, locking, invalid dates, reselection, exact payload, retry, double submit, messenger, refresh
-chromium: PASS normal motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
-chromium: PASS reduced motion, one timer, reaction delay, travel, pagehide/pageshow cleanup
-chromium: PASS refusal unchanged
+webkit small: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit se: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit standard: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit pro: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit max: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit desktop: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+webkit: PASS normal motion, single timer, lifecycle cleanup
+webkit: PASS reduced motion, single timer, lifecycle cleanup
+webkit: PASS real refusal, no request
+webkit: PASS unavailable storage
+chromium small: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium se: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium standard: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium pro: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium max: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium desktop: PASS all four decisions, idle waits, reaction delay, locks, invalid date, payload, errors/retry, double submit, shipping, receipt refresh, overflow
+chromium: PASS normal motion, single timer, lifecycle cleanup
+chromium: PASS reduced motion, single timer, lifecycle cleanup
+chromium: PASS real refusal, no request
+chromium: PASS unavailable storage
+webkit: PASS real touch path, normal animations, Saturday, revise/reselect, note preservation, pending shipping and confirmed delivery
+chromium: PASS real touch path, normal animations, Saturday, revise/reselect, note preservation, pending shipping and confirmed delivery
